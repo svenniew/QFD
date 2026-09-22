@@ -12,7 +12,8 @@
   --accent2:#14857E; --accent2-soft:#D6EEEB;
   --pos:#14857E; --pos-soft:#D6EEEB; --neg:#B33A3A; --neg-soft:#F7DFDF;
   --danger:#B33A3A; --shadow:0 10px 28px rgba(60,30,60,.18);
-  --cw:56px; --rh:48px; --lw:200px; --ww:48px; --aw:44px;
+  --cw:56px; --rh:48px; --lw:220px; --ww:48px; --aw:44px; --lbw:140px; --fbw:92px;
+  --hlb:.86; --hlb2:.72;
   --fd:"Barlow Semi Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --fb:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
@@ -24,6 +25,7 @@
     --accent2:#4FC6BA; --accent2-soft:#173D39;
     --pos:#4FC6BA; --pos-soft:#173D39; --neg:#E47777; --neg-soft:#452424;
     --danger:#E47777; --shadow:0 10px 28px rgba(0,0,0,.55);
+    --hlb:1.4; --hlb2:1.9;
   }
 }
 :root[data-theme="dark"]{
@@ -33,6 +35,7 @@
   --accent2:#4FC6BA; --accent2-soft:#173D39;
   --pos:#4FC6BA; --pos-soft:#173D39; --neg:#E47777; --neg-soft:#452424;
   --danger:#E47777; --shadow:0 10px 28px rgba(0,0,0,.55);
+    --hlb:1.4; --hlb2:1.9;
 }
 
 *{box-sizing:border-box}
@@ -63,29 +66,18 @@ input[type=text]:focus,textarea:focus,button:focus-visible{outline:2px solid var
 #btnTheme{width:40px;padding:0;justify-content:center;font-size:17px}
 
 /* ---------- Palette ---------- */
-.palette{padding-block:8px 4px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
-.grp{display:flex;align-items:center;gap:4px}
-.grp .eyebrow{margin-right:4px}
-.br{height:36px;min-width:36px;padding:0 9px;border:1px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer;
-  font-size:17px;line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;user-select:none}
-.br:hover{background:var(--accent-soft)}
-.br.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.br .sub{font-size:10px;color:var(--muted);font-family:var(--fd)}
-.br.on .sub{color:var(--accent-ink);opacity:.8}
-.br.pos{color:var(--pos)} .br.neg{color:var(--neg)}
-.br.on.pos,.br.on.neg{color:var(--accent-ink)}
-body.brushing .cell,body.brushing .rc{cursor:crosshair}
 .sy{width:18px;height:18px;display:inline-block;vertical-align:middle}
 
 @media (pointer:coarse){
   .del{width:32px;height:32px;font-size:18px}
   .add{height:36px;min-width:36px}
-  .what input,.vt[contenteditable]{font-size:16px}
+  .ht,.vt[contenteditable]{font-size:16px}
   .zoombar button{width:40px;height:40px}
 }
 
 /* ---------- Bühne (skaliert, zentriert, zoombar) ---------- */
-.stage{position:relative;flex:1;min-height:240px;overflow:auto;display:flex;border:1px solid var(--line2);border-radius:10px;background:var(--surface2);
+.work{flex:1;display:flex;gap:10px;min-height:240px}
+.stage{position:relative;flex:1;min-width:0;min-height:0;overflow:auto;display:flex;border:1px solid var(--line2);border-radius:10px;background:var(--surface2);
   touch-action:none;overscroll-behavior:contain}
 .zoomer{margin:auto;flex:none;position:relative}
 #house{display:block;width:max-content;transform-origin:0 0}
@@ -100,7 +92,6 @@ table.hoq{border-collapse:separate;border-spacing:0;table-layout:fixed;font-vari
 .hoq td,.hoq th{border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:0;height:var(--rh);text-align:center;vertical-align:middle;background:var(--surface);font-weight:normal}
 .hoq th.lbl{font-family:var(--fd);font-weight:500;font-size:13px;text-align:right;padding:0 10px;color:var(--muted)}
 .hoq .lbl{border-left:1px solid var(--line2)}
-.hoq tr:first-child td,.hoq tr:first-child th{border-top:1px solid var(--line2)}
 .hoq .addc{background:transparent;border-color:transparent}
 .hoq .blank{background:var(--surface2)}
 .hoq td.ph{background:var(--surface2);color:var(--muted);font-size:12px;padding:6px}
@@ -111,33 +102,57 @@ td.rel .sy{width:22px;height:22px}
 td.rel.v0:not(.editing):hover::after{content:"·";color:var(--muted)}
 td.editing::after{content:none !important}
 td.wgt{font-family:var(--fd);font-weight:600;font-size:17px}
-td.dir{font-size:17px;color:var(--accent2)}
-.hoq .r-dir td,.hoq .r-dir th{height:32px;background:var(--surface2)}
+td.dir{color:var(--accent2)}
+td.dir .sy{width:19px;height:19px}
+.hoq .r-dir td,.hoq .r-dir th{height:32px}
 .hoq .r-how td,.hoq .r-how th{height:156px;vertical-align:bottom}
 .vt{writing-mode:vertical-rl;transform:rotate(180deg);display:inline-block;max-height:146px;max-width:100%;
-  font-family:var(--fd);font-weight:500;font-size:13px;line-height:1.15;padding:5px 0;overflow:hidden;overflow-wrap:anywhere;text-align:left}
+  font-family:var(--fb);font-weight:normal;font-size:13.5px;line-height:1.15;padding:5px 0;overflow:hidden;overflow-wrap:anywhere;text-align:left}
 .vt.small{font-size:12px;color:var(--muted);max-height:70px;font-family:var(--fb);font-weight:normal}
-.vt[contenteditable]{min-height:48px;min-width:1.2em;outline:none;border-radius:4px;cursor:text;padding:5px 2px}
-@media (hover:hover){ .vt[contenteditable]:hover{background:var(--accent-soft)} }
-.vt[contenteditable]:focus{background:var(--surface);box-shadow:0 0 0 2px var(--accent)}
-.hoq .r-tgt td,.hoq .r-tgt th{height:78px;vertical-align:bottom}
-.hoq th.corner{position:relative;text-align:left;padding:0;
-  background-image:linear-gradient(to top right, transparent calc(50% - .6px), var(--line) 50%, transparent calc(50% + .6px));background-color:var(--surface)}
-.hoq th.corner span{position:absolute;font-family:var(--fd);font-size:13px;color:var(--muted);line-height:1.15}
-.hoq th.corner span b{display:block;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:.04em}
-.hoq th.corner .c-wie{top:8px;right:10px;text-align:right}
-.hoq th.corner .c-was{bottom:8px;left:10px}
-.hoq th.corner .gew{display:block;position:absolute;right:0;bottom:0;width:var(--ww);height:var(--rh);line-height:var(--rh);text-align:center;font-size:12px;background:var(--surface2);border-left:1px solid var(--line2);border-top:1px solid var(--line2)}
-.hoq th.free{background:transparent;border-color:transparent}
+.vt[contenteditable]{height:116px;width:calc(var(--cw) - 10px);max-height:none;border:1px solid transparent;border-radius:6px;cursor:text;padding:6px 4px;line-height:1.2;margin-bottom:4px;box-sizing:border-box;background:transparent}
+.vt.small[contenteditable]{height:60px;margin-bottom:32px}
+@media (hover:hover){ td:hover > .vt[contenteditable], .vt[contenteditable]:hover{border-color:var(--line)} }
+.vt[contenteditable]:focus{background:var(--surface);outline:2px solid var(--accent);outline-offset:1px}
+.hoq .r-tgt td,.hoq .r-tgt th{height:98px;vertical-align:bottom}
+.hoq td.tgt{position:relative}
+.rot{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:26px;height:24px;border-radius:6px;border:1px solid var(--line2);background:var(--surface2);color:var(--accent2);cursor:pointer;font-family:var(--fd);font-weight:600;font-size:14px;line-height:1;padding:0}
+@media (hover:hover){ .rot:hover{border-color:var(--accent2);background:var(--accent2-soft)} }
+.hoq th.free{background:transparent;border:0;line-height:0}
+.hoq th.tight{padding-right:0}
+.lbox{display:inline-block;width:var(--lbw);text-align:right;height:32px;line-height:30px;padding:0 8px;background:var(--surface);border:1px solid var(--line2);border-right:none;vertical-align:bottom;box-sizing:border-box;white-space:nowrap}
+.lbox.wiebox{height:auto;line-height:1.25;padding:6px 8px;border-top:none}
+.lbox.wiebox .sub{display:block;margin:2px 0 0}
+.hoq th.tg{vertical-align:bottom !important}
+.fbox{display:inline-block;width:var(--fbw);height:var(--rh);line-height:calc(var(--rh) - 1px);padding:0 8px;text-align:right;background:var(--surface);border:1px solid var(--line2);border-top:none;box-sizing:border-box;vertical-align:bottom;white-space:nowrap}
+.fbox.tbox{border-top:1px solid var(--line2);line-height:calc(var(--rh) - 2px)}
+.hoq th.flbl{font-family:var(--fd);font-weight:500;font-size:12.5px;text-align:right;padding:0 8px;color:var(--muted);border-left:1px solid var(--line2)}
+.hoq .r-tgt th.flbl{border-top:1px solid var(--line2);vertical-align:bottom;padding-bottom:10px}
 .hoq th.cmp-title{text-align:center;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 .hoq td.how-h{position:relative}
 .del.col{position:absolute;top:3px;left:50%;transform:translateX(-50%)}
 .hoq td.rate{font-family:var(--fd);font-weight:600;font-size:16px;color:var(--accent2)}
-.hoq .cmp-sep{border-left:2px solid var(--line) !important}
+.hoq .first{border-left:1px solid var(--line2)}
+.hoq td.hl{background:color-mix(in srgb, var(--accent) 20%, var(--surface))}
+.hoq td.hl2{background:color-mix(in srgb, var(--accent) 42%, var(--surface)) !important}
+.rc.hl > polygon{fill:color-mix(in srgb, var(--accent) 20%, var(--surface))}
+.rc.hl.v1 > polygon,.rc.hl.v2 > polygon{fill:color-mix(in srgb, var(--accent) 22%, var(--pos-soft))}
+.rc.hl.v-1 > polygon,.rc.hl.v-2 > polygon{fill:color-mix(in srgb, var(--accent) 22%, var(--neg-soft))}
+.rc.hl2 > polygon{fill:color-mix(in srgb, var(--accent) 42%, var(--surface));stroke:var(--accent);stroke-width:1.5}
+.rc.hl2.v1 > polygon,.rc.hl2.v2 > polygon{fill:color-mix(in srgb, var(--accent) 40%, var(--pos-soft))}
+.rc.hl2.v-1 > polygon,.rc.hl2.v-2 > polygon{fill:color-mix(in srgb, var(--accent) 40%, var(--neg-soft))}
+.rc.editing.hl2 > polygon{fill:var(--surface)}
+.hoq .r-whead th,.hoq tr.first td.rel,.hoq tr.first td.rate,.hoq .r-tgt td.tgt,.hoq td.cmp-h{border-top:1px solid var(--line2)}
+.hoq .r-whead th{height:40px;font-family:var(--fd);font-size:12px;color:var(--muted);text-align:center;padding:0}
+.hoq .r-whead th.lbl{text-align:left;padding-left:10px}
+.hoq .r-whead th.lbl .sub{font-family:var(--fb);font-size:12px;color:var(--muted);margin-left:8px}
+.hoq th.wie{vertical-align:top !important;padding-top:0;font-weight:600;color:var(--ink);white-space:nowrap}
+.hoq th.wie .sub{font-family:var(--fb);font-weight:normal;font-size:12px;color:var(--muted);margin-left:8px}
+.hoq .r-whead th.lbl{font-weight:600;color:var(--ink)}
+.hoq th.cmp-title{background:var(--surface);border:1px solid var(--line2);border-bottom:none;text-align:center}
 .what{display:flex;align-items:center;gap:4px;padding:3px 4px 3px 8px;width:100%}
-.what input{flex:1;border-color:transparent;background:transparent;padding:6px 6px;width:100%}
-@media (hover:hover){ .what input:hover{border-color:var(--line)} }
-.what input:focus{background:var(--surface)}
+.ht{flex:1;min-width:0;height:40px;text-align:left;border:1px solid transparent;border-radius:6px;padding:4px 6px;font-family:var(--fb);font-size:13.5px;line-height:1.2;overflow:hidden;overflow-wrap:anywhere;cursor:text;background:transparent;box-sizing:border-box;outline:none}
+@media (hover:hover){ td.lbl:hover .ht, .ht:hover{border-color:var(--line)} }
+.ht:focus{background:var(--surface);outline:2px solid var(--accent);outline-offset:1px}
 .del{width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;flex:none}
 @media (hover:hover){ .del:hover{color:var(--danger);border-color:var(--danger)} }
 .del.armed{background:var(--danger);color:#fff;border-color:var(--danger)}
@@ -149,13 +164,16 @@ td.dir{font-size:17px;color:var(--accent2)}
 .hoq .r-calc td.top1{background:var(--accent2-soft);color:var(--accent2);font-weight:600}
 .hoq .r-calc.pct td{font-size:13px;color:var(--muted)}
 .hoq .r-roof td{background:transparent;border-color:transparent;height:auto;vertical-align:bottom}
-.hoq .r-roof td.lbl{background:transparent;border-color:transparent}
 .roofsvg{display:block}
-.rc polygon{fill:var(--surface2);stroke:var(--line);stroke-width:1}
-@media (hover:hover){ .rc:hover polygon{fill:var(--accent-soft)} }
+.roofbg{fill:var(--surface);stroke:none}
+.roofedge{fill:none;stroke:var(--line2);stroke-width:1}
+.rb{fill:var(--surface);stroke:none}
+.rb.hl{fill:color-mix(in srgb, var(--accent) 20%, var(--surface))}
+.rc polygon{fill:var(--surface);stroke:var(--line2);stroke-width:1}
+@media (hover:hover){ .rc:hover > polygon{fill:var(--accent-soft)} }
 .rc.v1 polygon,.rc.v2 polygon{fill:var(--pos-soft)}
 .rc.v-1 polygon,.rc.v-2 polygon{fill:var(--neg-soft)}
-.rc text{font-family:var(--fd);font-weight:600;font-size:16px;fill:var(--muted);pointer-events:none}
+.rc text{font-family:var(--fd);font-weight:700;font-size:19px;letter-spacing:.02em;fill:var(--muted);pointer-events:none}
 .rc.v1 text,.rc.v2 text{fill:var(--pos)}
 .rc.v-1 text,.rc.v-2 text{fill:var(--neg)}
 .rc{cursor:pointer}
@@ -179,7 +197,7 @@ td.rel .cand .sy,.cand .sy{width:13px;height:13px}
 .rc.editing > text{display:none}
 .rc .cand{cursor:pointer;pointer-events:all}
 .rc .cand polygon{fill:var(--surface);stroke:var(--line2);stroke-width:1}
-.rc .cand text{fill:var(--muted);opacity:.8;display:block;pointer-events:none;font-family:var(--fd);font-weight:600}
+.rc .cand text{fill:var(--muted);opacity:.8;display:block;pointer-events:none;font-family:var(--fd);font-weight:700}
 .rc .cand.p text{fill:var(--pos)} .rc .cand.n text{fill:var(--neg)}
 @media (hover:hover){ .rc .cand:hover polygon{fill:var(--accent-soft)} }
 @media (hover:hover){ .rc .cand:hover text{opacity:1} }
@@ -189,6 +207,59 @@ td.rel .cand .sy,.cand .sy{width:13px;height:13px}
 @media (hover:hover){ .rc .cand.x:hover circle{fill:var(--accent)} }
 .rc .cand.x.cur circle{fill:var(--accent)}
 
+
+/* ---------- Typo-Skala im Haus (einheitlich) ---------- */
+:root{ --fs-title:14px; --fs-label:12.5px; --fs-text:13.5px; --fs-val:15px; }
+.hoq .t-title{font-family:var(--fd);font-weight:600;font-size:var(--fs-title);color:var(--ink);letter-spacing:.02em}
+.hoq .t-title .sub{font-family:var(--fb);font-weight:normal;font-size:var(--fs-label);color:var(--muted);margin-left:8px;letter-spacing:0}
+.hoq th.lbl,.hoq th.flbl,.hoq .r-whead th.wgt{font-family:var(--fd);font-weight:500;font-size:var(--fs-label);color:var(--muted);letter-spacing:0;text-transform:none}
+.hoq th.cmp-title,.hoq th.wie,.hoq .r-whead th.lbl{font-family:var(--fd);font-weight:600;font-size:var(--fs-title);color:var(--ink);letter-spacing:.02em;text-transform:none}
+.hoq th.wie .sub,.hoq .r-whead th.lbl .sub{font-family:var(--fb);font-weight:normal;font-size:var(--fs-label);color:var(--muted);margin-left:8px}
+.hoq th.wie .sub{display:block;margin:2px 0 0}
+.ht,.vt,.vt.small{font-family:var(--fb);font-weight:normal;font-size:var(--fs-text);color:var(--ink)}
+.hoq td.wgt,.hoq td.rate,.hoq .r-calc td{font-family:var(--fd);font-weight:600;font-size:var(--fs-val);color:var(--ink)}
+.hoq td.rate{color:var(--accent2)}
+.hoq .r-calc.pct td{font-weight:500;font-size:var(--fs-label);color:var(--muted)}
+.hoq .r-calc td.top1{color:var(--accent2)}
+@media (pointer:coarse){ .ht,.vt[contenteditable]{font-size:16px} }
+
+/* ---------- Auswertung ---------- */
+.evpanel{width:300px;flex:none;display:flex;flex-direction:column;gap:8px;min-height:0}
+.evpanel textarea{width:100%;font:12.5px/1.4 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical}
+.evpanel .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.evpanel .row .m{flex:1;font-size:12px}
+.evlist{flex:1;min-height:80px;overflow:auto;border:1px solid var(--line2);border-radius:8px;background:var(--surface)}
+.evrow{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--line2);cursor:pointer;font-size:13px}
+.evrow.sel{background:var(--accent-soft)}
+.evrow.cls{font-weight:600;position:sticky;top:0;background:var(--surface2)}
+.evrow.cls.sel{background:var(--accent-soft)}
+.evrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evrow .d{font-family:var(--fd);font-variant-numeric:tabular-nums;color:var(--muted);width:40px;text-align:right}
+.evrow .k{font-family:var(--fd);font-weight:600;color:var(--neg);width:30px;text-align:right}
+.evcell{font-size:13px;min-height:22px;display:flex;flex-direction:column;gap:4px;color:var(--muted)}
+.evcell b{color:var(--ink);font-weight:500;display:block;line-height:1.3}
+.evcell .res{display:flex;flex-wrap:nowrap;gap:12px;align-items:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.evcell .res span{display:inline-flex;align-items:center;gap:3px}
+.evcell .sy{width:15px;height:15px}
+.ev .del,.ev .add{display:none}
+.ev [contenteditable]{pointer-events:none}
+.ev .cell{cursor:default}
+td.rel{position:relative}
+td.rel.hm{background:color-mix(in srgb, var(--accent) calc(var(--t,0)*100%), var(--surface));cursor:pointer !important}
+td.rel.hm.hi{color:var(--accent-ink)}
+td.rel.hm .ag{position:absolute;right:3px;bottom:2px;font-size:9px;line-height:1;font-family:var(--fd);opacity:.85;color:inherit}
+td.rel.hm .dot{color:var(--muted);font-size:18px;font-family:var(--fd);font-weight:600}
+td.rel .maj{position:absolute;right:2px;top:2px;color:var(--muted);line-height:1}
+td.rel .maj .sy{width:12px;height:12px}
+td.rel.diff{outline:1px dashed var(--muted);outline-offset:-2px}
+td.rel.contra{outline:2px solid var(--neg);outline-offset:-2px}
+td.rel.picked,.rc.picked polygon{box-shadow:inset 0 0 0 3px var(--accent2)}
+.rc.picked polygon{stroke:var(--accent2);stroke-width:2.5}
+.rc.hm{cursor:pointer}
+.rc.hm.pos polygon{fill:color-mix(in srgb, var(--pos) calc(var(--t,0)*100%), var(--surface2))}
+.rc.hm.neg polygon{fill:color-mix(in srgb, var(--neg) calc(var(--t,0)*100%), var(--surface2))}
+.rc.hm.pos text{fill:var(--pos)} .rc.hm.neg text{fill:var(--neg)}
+@media (max-width:760px){ .work{flex-direction:column} .evpanel{width:auto;max-height:45vh} }
 
 /* ---------- Dialog ---------- */
 dialog{border:none;border-radius:14px;padding:0;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);width:min(92vw,560px)}
@@ -216,8 +287,12 @@ dialog::backdrop{background:rgba(10,20,30,.45)}
 @media (max-width:560px){ .qrrow{flex-direction:column} .qr{width:100%;height:auto;aspect-ratio:1;max-width:260px;align-self:center} }
 
 @media (prefers-reduced-motion:no-preference){ .btn,.br,.del,.cand{transition:background .12s,color .12s,border-color .12s,opacity .12s} }
+/* Hell/Dunkel: weicher Übergang nur während des Umschaltens */
+.theming, .theming *{transition:background-color .4s ease, color .4s ease, border-color .4s ease, fill .4s ease, stroke .4s ease, box-shadow .4s ease !important}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+#btnTheme.spin{animation:spin .45s ease}
 @media print{
-  .top .actions,.palette,.zoombar,dialog,.qrbig{display:none !important}
+  .top .actions,.zoombar,dialog,.qrbig{display:none !important}
   body{background:#fff;color:#000;padding:0;display:block}
   .stage{overflow:visible;height:auto !important;border:none;background:none;display:block}
   .zoomer{width:auto !important;height:auto !important;margin:0}
@@ -230,29 +305,14 @@ dialog::backdrop{background:rgba(10,20,30,.45)}
   <div class="proj"><input aria-label="Projekt" type="text" id="title" placeholder="Projekt"></div>
   <div class="actions">
     <button class="btn primary" id="btnCode" type="button">⌘ Code</button>
-    <button class="btn" id="btnPrint" type="button">Drucken</button>
+    <button class="btn" id="btnEval" type="button">Auswertung</button>
     <button class="btn" id="btnNew" type="button">Neu</button>
     <button class="btn" id="btnTheme" type="button" title="Hell / Dunkel">☾</button>
   </div>
 </div>
 
-<div class="palette" id="palette">
-  <div class="grp">
-    <button class="br" type="button" data-brush="rel" data-v="9" data-sym="9" title="Stark (9)"></button>
-    <button class="br" type="button" data-brush="rel" data-v="3" data-sym="3" title="Mittel (3)"></button>
-    <button class="br" type="button" data-brush="rel" data-v="1" data-sym="1" title="Schwach (1)"></button>
-  </div>
-  <div class="grp">
-    <button class="br pos" type="button" data-brush="roof" data-v="2" title="Stark positiv">++</button>
-    <button class="br pos" type="button" data-brush="roof" data-v="1" title="Positiv">+</button>
-    <button class="br neg" type="button" data-brush="roof" data-v="-1" title="Negativ">−</button>
-    <button class="br neg" type="button" data-brush="roof" data-v="-2" title="Stark negativ">−−</button>
-  </div>
-  <div class="grp">
-    <button class="br" type="button" data-brush="erase" title="Feld leeren">⌫</button>
-  </div>
-</div>
 
+<div class="work" id="work">
 <div class="stage" id="stage">
   <div class="zoomer" id="zoomer"><div id="house"></div></div>
   <div class="zoombar">
@@ -261,6 +321,14 @@ dialog::backdrop{background:rgba(10,20,30,.45)}
     <button type="button" id="zIn" title="Vergrößern">+</button>
     <button type="button" id="zFit" title="Ganzes Diagramm einpassen">⊡</button>
   </div>
+</div>
+<aside class="evpanel" id="evpanel" hidden>
+  <textarea id="evIn" rows="3" placeholder="Codes" spellcheck="false"></textarea>
+  <div class="row"><span id="evMsg" class="m"></span><button type="button" class="btn primary" id="evAdd">Hinzufügen</button></div>
+  <div class="evlist" id="evList"></div>
+  <div class="evcell" id="evCell"></div>
+  <div class="row"><button type="button" class="btn" id="evCopy">Sammlung kopieren</button><button type="button" class="btn danger" id="evClear">Leeren</button></div>
+</aside>
 </div>
 
 
@@ -271,6 +339,7 @@ dialog::backdrop{background:rgba(10,20,30,.45)}
     <header><h2>Code</h2><button class="x" value="close" type="submit" aria-label="Schließen">×</button></header>
     <section>
       <h3>Kurzcode <span class="m">ohne Texte</span></h3>
+      <input type="text" id="author" placeholder="Name" autocomplete="off" style="width:100%">
       <div class="short" id="shortOut"></div>
       <div class="row"><span id="shortLen" class="m"></span><button type="button" class="btn primary" id="btnCopyShort">Kopieren</button></div>
     </section>
@@ -298,13 +367,17 @@ dialog::backdrop{background:rgba(10,20,30,.45)}
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const REL = {
-  9:'<svg class="sy" viewBox="0 0 20 20" aria-label="stark"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>',
+  9:'<svg class="sy" viewBox="0 0 20 20" aria-label="stark"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="10" cy="10" r="2.6" fill="currentColor"/></svg>',
   3:'<svg class="sy" viewBox="0 0 20 20" aria-label="mittel"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>',
-  1:'<svg class="sy" viewBox="0 0 20 20" aria-label="schwach"><polygon points="3.5,4.5 16.5,4.5 10,16.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'
+  1:'<svg class="sy" viewBox="0 0 20 20" aria-label="schwach"><polygon points="3.5,15.5 16.5,15.5 10,3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'
 }, RELN = {9:'Stark',3:'Mittel',1:'Schwach'};
 document.querySelectorAll('[data-sym]').forEach(el=>{ el.innerHTML = REL[el.dataset.sym] + el.innerHTML; });
 const ROOF = {2:'++',1:'+','-1':'−','-2':'−−'}, ROOFN = {2:'Stark positiv',1:'Positiv','-1':'Negativ','-2':'Stark negativ'};
-const DIR = {1:'↑','-1':'↓',0:'◇'}, DIRN = {1:'Maximieren','-1':'Minimieren',0:'Zielwert treffen'};
+const DIR = {
+  1:'<svg class="sy" viewBox="0 0 20 20" aria-label="maximieren"><path d="M10 17V4M4.5 9.5 10 4l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  '-1':'<svg class="sy" viewBox="0 0 20 20" aria-label="minimieren"><path d="M10 3v13M4.5 10.5 10 16l5.5-5.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  0:'<svg class="sy" viewBox="0 0 20 20" aria-label="Zielwert"><polygon points="10,3 17,10 10,17 3,10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></svg>'
+}, DIRN = {1:'Maximieren – je größer, desto besser','-1':'Minimieren – je kleiner, desto besser',0:'Zielwert treffen'};
 const LS = 'qfd.werkstatt.state';
 
 let S, brush = null, painting = false, edit = null;
@@ -312,7 +385,7 @@ const house = $('#house'), stage = $('#stage'), zoomer = $('#zoomer'), zPct = $(
 
 /* ---------- Zustand ---------- */
 function mk(m, n){
-  return { title:'', whats:Array.from({length:m},()=>({name:'',w:0})),
+  return { title:'', author:'', whats:Array.from({length:m},()=>({name:'',w:0})),
     hows:Array.from({length:n},()=>({name:'',dir:1,target:''})),
     rel:Array.from({length:m},()=>Array(n).fill(0)),
     roof:Array.from({length:n},()=>Array(n).fill(0)),
@@ -321,7 +394,7 @@ function mk(m, n){
 function sample(){
   const s = mk(5,5);
   s.title = 'Glas-Ladegabel (Beispiel)';
-  [['Hohe Tragfähigkeit',9],['Geringes Eigengewicht',7],['Schnelles Be- und Entladen',7],['Lange Lebensdauer',5],['Günstiger Preis',4]]
+  [['Hohe Tragfähigkeit',5],['Geringes Eigengewicht',4],['Schnelles Be- und Entladen',4],['Lange Lebensdauer',3],['Günstiger Preis',2]]
     .forEach((a,i)=>{ s.whats[i] = {name:a[0], w:a[1]}; });
   [['Tragkraft',1,'≥ 250 kg'],['Eigengewicht',-1,'≤ 12 kg'],['Federrate',0,'N/mm'],['Anzahl Bauteile',-1,'Stk.'],['Blechstärke',0,'mm']]
     .forEach((a,j)=>{ s.hows[j] = {name:a[0], dir:a[1], target:a[2]}; });
@@ -331,9 +404,9 @@ function sample(){
   s.rate = [[4,3],[3,4],[2,4],[4,3],[3,2]];
   return s;
 }
-function compute(){
+function compute(rel = S.rel){
   const n = S.hows.length, abs = Array(n).fill(0);
-  S.whats.forEach((w,i)=>S.hows.forEach((h,j)=>{ abs[j] += (w.w||0) * (S.rel[i][j]||0); }));
+  S.whats.forEach((w,i)=>S.hows.forEach((h,j)=>{ abs[j] += (w.w||0) * (rel[i][j]||0); }));
   const total = abs.reduce((a,b)=>a+b,0);
   const pct = abs.map(a=>total?a/total*100:0);
   const order = abs.map((a,j)=>j).sort((a,b)=>abs[b]-abs[a]);
@@ -348,7 +421,9 @@ function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{ try{ localStorage
 const cssPx = name => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
 function roofSvg(n){
   const CW = cssPx('--cw') || 56, H = n*CW/2, W = n*CW;
-  let s = `<svg class="roofsvg" width="${W}" height="${H+1}" viewBox="0 0 ${W} ${H+1}" aria-label="Korrelationsdach">`;
+  let s = `<svg class="roofsvg" width="${W}" height="${H+1}" viewBox="0 0 ${W} ${H+1}" aria-label="Korrelationsdach"><polygon class="roofbg" points="0,${H+1} ${W},${H+1} ${W/2},0"/>`;
+  for(let j=0;j<n;j++) s += `<polygon class="rb" data-col="${j}" points="${j*CW},${H+1} ${(j+1)*CW},${H+1} ${(j+0.5)*CW},${H+1-CW/2}"/>`;
+  s += `<polyline class="roofedge" points="0,${H+1} ${W/2},0 ${W},${H+1}"/>`;
   for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
     const cx = (i+j+1)/2*CW, cy = H-(j-i)*CW/2, h = CW/2, v = S.roof[i][j]||0;
     s += `<g class="rc v${v}" data-cell="roof" data-i="${i}" data-j="${j}" data-cx="${cx}" data-cy="${cy}" data-h="${h}"><polygon points="${cx},${cy-h} ${cx+h},${cy} ${cx},${cy+h} ${cx-h},${cy}"/><text x="${cx}" y="${cy+5.5}" text-anchor="middle">${ROOF[v]||''}</text></g>`;
@@ -357,44 +432,50 @@ function roofSvg(n){
 }
 function render(){
   edit = null;
-  const n = S.hows.length, nc = Math.max(n,1), c = S.comps.length;
+  const n = S.hows.length, nc = Math.max(n,1), c = S.comps.length, cc = Math.max(c,1);
   const hows = f => n ? S.hows.map((h,j)=>f(h,j)).join('') : '';
   const cmps = f => S.comps.map((x,k)=>f(x,k)).join('');
   const ph = n ? '' : '<td class="ph"></td>';
-  const gap = `<td class="addc" colspan="${c+1}"></td>`;
-  const tw = cssPx('--lw') + cssPx('--ww') + (nc+c)*cssPx('--cw') + 2*cssPx('--aw');
-  let h = `<table class="hoq" id="hoq" style="width:${tw}px"><colgroup><col class="c-lbl"><col class="c-wgt">${'<col class="c-how">'.repeat(nc)}<col class="c-add">${'<col class="c-how">'.repeat(c)}<col class="c-add"></colgroup><tbody>`;
-  h += `<tr class="r-roof"><td class="lbl" colspan="2"></td><td colspan="${nc}">${n>=2?roofSvg(n):'<div class="roof-empty"></div>'}</td><td class="addc"></td>${gap}</tr>`;
-  h += `<tr class="r-dir"><th class="lbl free" colspan="2">Optimierung</th>${hows((x,j)=>`<td class="cell dir" data-cell="dir" data-j="${j}" title="${DIRN[x.dir]}">${DIR[x.dir]}</td>`)}${ph}<td class="addc"></td>${c ? `<th class="lbl cmp-title cmp-sep" colspan="${c}">Wettbewerb</th><td class="addc"></td>` : gap}</tr>`;
-  h += `<tr class="r-how"><th class="lbl corner" colspan="2"><span class="c-wie"><b>WIE</b>Merkmale</span><span class="c-was"><b>WAS</b>Anforderungen</span><span class="gew">Gew.</span></th>`
-     + hows((x,j)=>`<td class="cell how-h" data-cell="how" data-j="${j}"><button class="del col" type="button" data-act="delHow" data-j="${j}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-hown="${j}">${esc(x.name)}</span></td>`)
+  const gapR = `<td class="addc" colspan="${cc+1}"></td>`, gapC = '<td class="addc"></td>', cph = c ? '' : gapC;
+  const fst = j => j===0 ? ' first' : '';
+  const tw = cssPx('--lw') + cssPx('--ww') + (nc+cc)*cssPx('--cw') + 3*cssPx('--aw');
+  let h = `<table class="hoq" id="hoq" style="width:${tw}px"><colgroup><col class="c-lbl"><col class="c-wgt"><col class="c-add">${'<col class="c-how">'.repeat(nc)}<col class="c-add">${'<col class="c-how">'.repeat(cc)}<col class="c-add"></colgroup><tbody>`;
+  /* WIE-Block: Dach + Optimierung + Merkmale */
+  h += `<tr class="r-roof"><td class="addc" colspan="2"></td>${gapC}<td colspan="${nc}">${n>=2?roofSvg(n):'<div class="roof-empty"></div>'}</td>${gapC}${gapR}</tr>`;
+  h += `<tr class="r-dir"><th class="lbl free tight" colspan="3"><span class="lbox">Optimierung</span></th>${hows((x,j)=>`<td class="cell dir${fst(j)}" data-cell="dir" data-j="${j}" title="${DIRN[x.dir]}">${DIR[x.dir]}</td>`)}${ph}${gapC}<th class="lbl cmp-title" colspan="${c>=2 ? cc : cc+1}">Wettbewerb</th>${c>=2 ? gapC : ''}</tr>`;
+  h += `<tr class="r-how"><th class="lbl free tight wie" colspan="3"><span class="lbox wiebox">WIE?<span class="sub">Technische Merkmale</span></span></th>`
+     + hows((x,j)=>`<td class="cell how-h${fst(j)}" data-cell="how" data-j="${j}"><button class="del col" type="button" tabindex="-1" data-act="delHow" data-j="${j}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-hown="${j}">${esc(x.name)}</span></td>`)
      + (n ? '' : '<td class="ph"></td>')
-     + `<td class="addc"><button class="add" type="button" data-act="addHow" title="Merkmal hinzufügen">+</button></td>`
-     + cmps((x,k)=>`<td class="cell how-h${k===0?' cmp-sep':''}" data-cell="cmp" data-j="${k}"><button class="del col" type="button" data-act="delCmp" data-j="${k}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-cmpn="${k}">${esc(x.name)}</span></td>`)
-     + `<td class="addc"><button class="add" type="button" data-act="addCmp" title="Wettbewerber hinzufügen">+</button></td></tr>`;
+     + `<td class="addc"><button class="add" type="button" tabindex="-1" data-act="addHow" title="Merkmal hinzufügen">+</button></td>`
+     + cmps((x,k)=>`<td class="cell how-h cmp-h${fst(k)}" data-cell="cmp" data-j="${k}"><button class="del col" type="button" tabindex="-1" data-act="delCmp" data-j="${k}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-cmpn="${k}">${esc(x.name)}</span></td>`)
+     + cph + `<td class="addc"><button class="add" type="button" tabindex="-1" data-act="addCmp" title="Wettbewerber hinzufügen">+</button></td></tr>`;
+  /* Lückenzeile = Überschrift der WAS-Tabelle */
+  h += `<tr class="r-whead"><th class="lbl">WAS?<span class="sub">Kundenanforderungen</span></th><th class="wgt" title="Gewichtung 1–5: 1 unwichtig … 5 entscheidend">Gew.</th>${gapC}<td class="addc" colspan="${nc + cc + 2}"></td></tr>`;
   S.whats.forEach((w,i)=>{
-    h += `<tr><td class="lbl"><div class="what"><input type="text" id="what-${i}" data-name="what" data-i="${i}" value="${esc(w.name)}" placeholder="" autocomplete="off"><button class="del" type="button" data-act="delWhat" data-i="${i}" title="Zeile löschen">×</button></div></td>`
-       + `<td class="cell wgt" data-cell="w" data-i="${i}">${w.w||''}</td>`
-       + hows((x,j)=>{ const v = S.rel[i][j]||0; return `<td class="cell rel v${v}" data-cell="rel" data-i="${i}" data-j="${j}">${REL[v]||''}</td>`; })
-       + ph + `<td class="addc"></td>`
-       + cmps((x,k)=>`<td class="cell rate${k===0?' cmp-sep':''}" data-cell="rate" data-i="${i}" data-j="${k}">${S.rate[i][k]||''}</td>`)
-       + `<td class="addc"></td></tr>`;
+    h += `<tr class="${i===0?'first':''}"><td class="lbl"><div class="what"><div class="ht" contenteditable="true" spellcheck="false" data-whatn="${i}">${esc(w.name)}</div><button class="del" type="button" tabindex="-1" data-act="delWhat" data-i="${i}" title="Zeile löschen">×</button></div></td>`
+       + `<td class="cell wgt" data-cell="w" data-i="${i}">${w.w||''}</td>${gapC}`
+       + hows((x,j)=>{ const v = S.rel[i][j]||0; return `<td class="cell rel v${v}${fst(j)}" data-cell="rel" data-i="${i}" data-j="${j}">${REL[v]||''}</td>`; })
+       + ph + gapC
+       + cmps((x,k)=>`<td class="cell rate${fst(k)}" data-cell="rate" data-i="${i}" data-j="${k}">${S.rate[i][k]||''}</td>`)
+       + cph + gapC + `</tr>`;
   });
-  h += `<tr class="r-add"><td class="addc" colspan="2"><button class="add" type="button" data-act="addWhat" title="Anforderung hinzufügen">+</button></td><td class="addc" colspan="${nc + c + 2}"></td></tr>`;
-  h += `<tr class="r-tgt"><th class="lbl" colspan="2">Zielwert</th>${hows((x,j)=>`<td class="cell tgt" data-cell="how" data-j="${j}"><span class="vt small" contenteditable="true" spellcheck="false" data-howt="${j}">${esc(x.target)}</span></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
-  h += `<tr class="r-calc abs"><th class="lbl" colspan="2">Bedeutung</th>${hows((x,j)=>`<td data-abs="${j}"></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
-  h += `<tr class="r-calc pct"><th class="lbl" colspan="2">%</th>${hows((x,j)=>`<td data-pct="${j}"></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
-  h += `<tr class="r-calc"><th class="lbl" colspan="2">Rang</th>${hows((x,j)=>`<td data-rank="${j}"></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
+  h += `<tr class="r-add"><td class="addc" colspan="2"><button class="add" type="button" tabindex="-1" data-act="addWhat" title="Anforderung hinzufügen">+</button></td><td class="addc" colspan="${nc + cc + 3}"></td></tr>`;
+  /* Fußtabelle: Labels rahmenlos, Zellen nur unter den Merkmalen */
+  h += `<tr class="r-tgt"><th class="lbl free tight tg" colspan="3"><span class="fbox tbox">Zielwert</span></th>${hows((x,j)=>`<td class="cell tgt" data-cell="how" data-j="${j}"><span class="vt small" contenteditable="true" spellcheck="false" data-howt="${j}">${esc(x.target.replace(/^(≥|≤|=|>=|<=)s*/,''))}</span><button class="rot" type="button" tabindex="-1" data-act="rotTgt" data-j="${j}" title="≥ / ≤ / =">${pfxOf(x.target).trim()||'·'}</button></td>`)}${ph}${gapC}${gapR}</tr>`;
+  h += `<tr class="r-calc abs"><th class="lbl free tight" colspan="3"><span class="fbox">Bedeutung</span></th>${hows((x,j)=>`<td data-abs="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
+  h += `<tr class="r-calc pct"><th class="lbl free tight" colspan="3"><span class="fbox">%</span></th>${hows((x,j)=>`<td data-pct="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
+  h += `<tr class="r-calc"><th class="lbl free tight" colspan="3"><span class="fbox">Rang</span></th>${hows((x,j)=>`<td data-rank="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
   h += '</tbody></table>';
   house.innerHTML = h;
   house.innerHTML = h;
   $('#title').value = S.title;
   updateFooter();
+  if(mode==='eval') decorateEval(); else house.classList.remove('ev');
   layout();
   save();
 }
-function updateFooter(){
-  const {abs, pct, rank} = compute();
+function updateFooter(rel = S.rel){
+  const {abs, pct, rank} = compute(rel);
   S.hows.forEach((x,j)=>{
     const a = house.querySelector(`[data-abs="${j}"]`), p = house.querySelector(`[data-pct="${j}"]`), r = house.querySelector(`[data-rank="${j}"]`);
     if(!a) return;
@@ -407,7 +488,7 @@ function updateFooter(){
 function paintCell(kind, i, j){
   if(kind==='rel'){ const el = house.querySelector(`td[data-cell="rel"][data-i="${i}"][data-j="${j}"]`); if(!el) return; const v = S.rel[i][j]||0; el.className = `cell rel v${v}`; el.innerHTML = REL[v]||''; }
   else if(kind==='w'){ const el = house.querySelector(`td[data-cell="w"][data-i="${i}"]`); if(!el) return; el.className = 'cell wgt'; el.textContent = S.whats[i].w||''; }
-  else if(kind==='dir'){ const el = house.querySelector(`td[data-cell="dir"][data-j="${j}"]`); if(!el) return; el.className = 'cell dir'; el.textContent = DIR[S.hows[j].dir]; el.title = DIRN[S.hows[j].dir]; }
+  else if(kind==='dir'){ const el = house.querySelector(`td[data-cell="dir"][data-j="${j}"]`); if(!el) return; el.className = 'cell dir'; el.innerHTML = DIR[S.hows[j].dir]; el.title = DIRN[S.hows[j].dir]; }
   else if(kind==='rate'){ const el = house.querySelector(`td[data-cell="rate"][data-i="${i}"][data-j="${j}"]`); if(!el) return; el.classList.remove('editing'); el.textContent = S.rate[i][j]||''; }
   else if(kind==='roof'){ const g = house.querySelector(`g[data-cell="roof"][data-i="${i}"][data-j="${j}"]`); if(!g) return; const v = S.roof[i][j]||0; g.setAttribute('class', `rc v${v}`); g.querySelectorAll('.cands').forEach(c=>c.remove()); g.querySelector('text').textContent = ROOF[v]||''; }
 }
@@ -415,8 +496,8 @@ function paintCell(kind, i, j){
 /* ---------- Bühne: Bildschirmgröße abfragen, einpassen, zoomen ---------- */
 let scale = 1, fitMode = true, natW = 0, natH = 0;
 function stageSize(){
-  const top = stage.getBoundingClientRect().top;
-  stage.style.height = Math.max(240, window.innerHeight - top - 10) + 'px';
+  const work = $('#work'), top = work.getBoundingClientRect().top;
+  work.style.height = Math.max(240, window.innerHeight - top - 10) + 'px';
 }
 function measure(){ const t = $('#hoq'); if(!t) return; natW = t.offsetWidth; natH = t.offsetHeight; }
 function applyScale(s, keepCenter){
@@ -470,10 +551,19 @@ function setRel(i,j,v){ S.rel[i][j] = v; paintCell('rel',i,j); updateFooter(); s
 function setRoof(i,j,v){ S.roof[i][j] = v; paintCell('roof',i,j); save(); }
 function setW(i,v){ S.whats[i].w = v; paintCell('w',i); updateFooter(); save(); }
 function setDir(j,v){ S.hows[j].dir = v; paintCell('dir',null,j); save(); }
+const PFX = ['', '≥ ', '≤ ', '= '];
+function pfxOf(t){ const m = /^(≥|≤|=|>=|<=)\s*/.exec(t||''); return m ? (m[1]==='>=' ? '≥ ' : m[1]==='<=' ? '≤ ' : m[1]+' ') : ''; }
+function rotTgt(j){
+  const t = S.hows[j].target||'', cur = pfxOf(t), rest = t.replace(/^(≥|≤|=|>=|<=)\s*/,'');
+  S.hows[j].target = PFX[(PFX.indexOf(cur)+1)%PFX.length] + rest;
+  const b = house.querySelector(`.rot[data-j="${j}"]`);
+  if(b) b.textContent = pfxOf(S.hows[j].target).trim()||'·';
+  save();
+}
 function setRate(i,k,v){ S.rate[i][k] = v; paintCell('rate',i,k); save(); }
 function addWhat(){
   S.whats.push({name:'',w:0}); S.rel.push(Array(S.hows.length).fill(0)); S.rate.push(Array(S.comps.length).fill(0)); render();
-  const inp = $(`#what-${S.whats.length-1}`); if(inp) inp.focus({preventScroll:true});
+  const sp = house.querySelector(`[data-whatn="${S.whats.length-1}"]`); if(sp) focusEnd(sp);
 }
 function addHow(){
   S.hows.push({name:'',dir:1,target:''}); S.rel.forEach(r=>r.push(0));
@@ -504,20 +594,16 @@ function applyBrush(el){
   if(k==='rel') setRel(i,j,brush.v); else if(k==='roof') setRoof(i,j,brush.v);
   return true;
 }
-$('#palette').addEventListener('click', e=>{
-  const b = e.target.closest('.br'); if(!b) return;
-  const nb = {kind:b.dataset.brush, v:+b.dataset.v};
-  setBrush(brush && brush.kind===nb.kind && (nb.kind==='erase' || brush.v===nb.v) ? null : nb);
-  exitEdit();
-});
 
 /* ---------- Auswahl direkt in der Zelle ---------- */
 function candHtml(kind, cur){
-  const c = (inner, v, cls='') => `<button type="button" class="cand ${cls}${cur===v?' cur':''}" data-set="${v}">${inner}</button>`;
-  if(kind==='rel') return `<div class="cands g2">${c(REL[9],9)}${c(REL[3],3)}${c(REL[1],1)}${c('·',0,'x')}</div>`;
-  if(kind==='w')   return `<div class="cands g3">${[1,2,3,4,5,6,7,8,9].map(n=>c(n,n)).join('')}</div>`;
-  if(kind==='dir') return `<div class="cands g3">${[1,-1,0].map(d=>c(DIR[d],d)).join('')}</div>`;
-  if(kind==='rate') return `<div class="cands g3">${[1,2,3,4,5].map(n=>c(n,n)).join('')}</div>`;
+  const c = (inner, v, cls='', tip='') => `<button type="button" class="cand ${cls}${cur===v?' cur':''}" data-set="${v}" title="${tip}">${inner}</button>`;
+  const WN = {1:'unwichtig',2:'weniger wichtig',3:'wichtig',4:'sehr wichtig',5:'entscheidend'};
+  const RN = {1:'deutlich schlechter',2:'schlechter',3:'gleichwertig',4:'besser',5:'deutlich besser'};
+  if(kind==='rel') return `<div class="cands g2">${c(REL[9],9,'','Starke Beziehung (9)')}${c(REL[3],3,'','Mittlere Beziehung (3)')}${c(REL[1],1,'','Schwache Beziehung (1)')}${c('·',0,'x','Keine Beziehung (0)')}</div>`;
+  if(kind==='w')   return `<div class="cands g3">${[1,2,3,4,5].map(n=>c(n,n,'',`Gewichtung ${n} – ${WN[n]}`)).join('')}</div>`;
+  if(kind==='dir') return `<div class="cands g3">${[1,-1,0].map(d=>c(DIR[d],d,'',DIRN[d])).join('')}</div>`;
+  if(kind==='rate') return `<div class="cands g3">${[1,2,3,4,5].map(n=>c(n,n,'',`Bewertung ${n} – ${RN[n]}`)).join('')}</div>`;
   return '';
 }
 function enterEdit(el){
@@ -530,9 +616,9 @@ function enterEdit(el){
     const sub = (x,y) => `${x},${y-q} ${x+q},${y} ${x},${y+q} ${x-q},${y}`;
     const quads = [[2,'p',cx,cy-q],[1,'p',cx-q,cy],[-1,'n',cx+q,cy],[-2,'n',cx,cy+q]].map(([v,cls,x,y])=>[v,cls,sub(x,y),x,y]);
     const g = document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','cands');
-    g.innerHTML = quads.map(([v,cls,pts,x,y])=>`<g class="cand ${cls}${cur===v?' cur':''}" data-set="${v}"><polygon points="${pts}"/><text x="${x}" y="${y}" dy="0.36em" text-anchor="middle" font-size="${fs}">${ROOF[v]}</text></g>`).join('')
-      + `<g class="cand x${cur===0?' cur':''}" data-set="0"><circle cx="${cx}" cy="${cy}" r="${(h*0.2).toFixed(1)}"/></g>`;
-    el.appendChild(g); el.classList.add('editing');
+    g.innerHTML = quads.map(([v,cls,pts,x,y])=>`<g class="cand ${cls}${cur===v?' cur':''}" data-set="${v}"><title>${ROOFN[v]}</title><polygon points="${pts}"/><text x="${x}" y="${y}" dy="0.36em" text-anchor="middle" font-size="${fs}">${ROOF[v]}</text></g>`).join('')
+      + `<g class="cand x${cur===0?' cur':''}" data-set="0"><title>Keine Korrelation</title><circle cx="${cx}" cy="${cy}" r="${(h*0.2).toFixed(1)}"/></g>`;
+    el.appendChild(g); el.classList.add('editing'); if(el !== el.parentNode.lastElementChild) el.parentNode.appendChild(el);
   } else {
     const cur = kind==='rel' ? (S.rel[i][j]||0) : kind==='w' ? (S.whats[i].w||0) : kind==='rate' ? (S.rate[i][j]||0) : S.hows[j].dir;
     el.innerHTML = candHtml(kind, cur); el.classList.add('editing');
@@ -548,6 +634,7 @@ function commit(v){
 
 /* ---------- Ereignisse im Haus ---------- */
 house.addEventListener('click', e=>{
+  if(mode==='eval'){ evClick(e); return; }
   const act = e.target.closest('[data-act]');
   if(act){
     if(act.dataset.act==='addWhat') addWhat();
@@ -556,6 +643,7 @@ house.addEventListener('click', e=>{
     else if(act.dataset.act==='delHow') arm(act, ()=>delHow(+act.dataset.j), '?');
     else if(act.dataset.act==='addCmp') addCmp();
     else if(act.dataset.act==='delCmp') arm(act, ()=>delCmp(+act.dataset.j), '?');
+    else if(act.dataset.act==='rotTgt') rotTgt(+act.dataset.j);
     return;
   }
   const cand = e.target.closest('[data-set]');
@@ -573,18 +661,39 @@ house.addEventListener('click', e=>{
 function focusEnd(el){ el.focus(); try{ const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }catch(e){} }
 house.addEventListener('input', e=>{
   const t = e.target, d = t.dataset;
-  if(d.name==='what'){ S.whats[+d.i].name = t.value; save(); return; }
   const txt = t.textContent.replace(/[\r\n]+/g,' ');
-  if(d.hown!==undefined) S.hows[+d.hown].name = txt;
-  else if(d.howt!==undefined) S.hows[+d.howt].target = txt;
+  if(d.whatn!==undefined) S.whats[+d.whatn].name = txt;
+  else if(d.hown!==undefined) S.hows[+d.hown].name = txt;
+  else if(d.howt!==undefined) S.hows[+d.howt].target = pfxOf(S.hows[+d.howt].target) + txt;
   else if(d.cmpn!==undefined) S.comps[+d.cmpn].name = txt;
   else return;
   save();
 });
 house.addEventListener('focusout', e=>{ const t = e.target; if(t.isContentEditable){ const txt = t.textContent.replace(/[\r\n]+/g,' ').trim(); if(t.textContent!==txt) t.textContent = txt; } });
 house.addEventListener('paste', e=>{ if(!e.target.isContentEditable) return; e.preventDefault(); const txt = (e.clipboardData||window.clipboardData).getData('text').replace(/[\r\n]+/g,' '); document.execCommand('insertText', false, txt); });
-house.addEventListener('pointerdown', e=>{ if(brush && e.pointerType==='mouse' && e.target.closest('[data-cell]')) painting = true; });
-document.addEventListener('pointerup', ()=>{ painting = false; });
+/* Hover: beteiligte Zeile/Spalte(n) markieren */
+let hlEls = [];
+function clearHl(){ hlEls.forEach(el=>el.classList.remove('hl','hl2')); hlEls = []; }
+function hlRoof(i,j){ const out = []; for(let k=i+1;k<=j;k++) out.push([i,k]); for(let k=i;k<j;k++) out.push([k,j]); return out.filter(([a,b])=>!(a===i&&b===j)).map(([a,b])=>house.querySelector(`g[data-cell="roof"][data-i="${a}"][data-j="${b}"]`)).filter(Boolean); }
+function hlCol(j){ return [...house.querySelectorAll(`td.how-h[data-cell="how"][data-j="${j}"], td.dir[data-j="${j}"], polygon.rb[data-col="${j}"], td.tgt[data-j="${j}"], td[data-abs="${j}"], td[data-pct="${j}"], td[data-rank="${j}"]`), ...(mode==='eval' ? [] : house.querySelectorAll(`td.rel[data-j="${j}"]`))]; }
+function hlRow(i){ return [...house.querySelectorAll(`td.lbl:has([data-whatn="${i}"]), td.wgt[data-i="${i}"]`), ...(mode==='eval' ? [] : house.querySelectorAll(`td.rel[data-i="${i}"], td.rate[data-i="${i}"]`))]; }
+function hlCmp(k){ return [...house.querySelectorAll(`td.cmp-h[data-j="${k}"]`), ...(mode==='eval' ? [] : house.querySelectorAll(`td.rate[data-j="${k}"]`))]; }
+house.addEventListener('pointerover', e=>{
+  if(e.pointerType!=='mouse') return;
+  let c = e.target.closest('[data-cell]'); clearHl();
+  if(!c){ const lb = e.target.closest('td.lbl'), sp = lb && lb.querySelector('[data-whatn]'); if(!sp) return; hlEls = hlRow(+sp.dataset.whatn).filter(el=>el!==lb); hlEls.forEach(el=>el.classList.add('hl')); lb.classList.add('hl2'); hlEls.push(lb); return; }
+  const k = c.dataset.cell, i = +c.dataset.i, j = +c.dataset.j;
+  if(k==='rel') hlEls = [...hlRow(i), ...hlCol(j)];
+  else if(k==='roof') hlEls = [...hlRoof(i,j), ...house.querySelectorAll(`td.how-h[data-cell="how"][data-j="${i}"], td.how-h[data-cell="how"][data-j="${j}"], td.dir[data-j="${i}"], td.dir[data-j="${j}"], polygon.rb[data-col="${i}"], polygon.rb[data-col="${j}"]`)];
+  else if(k==='rate') hlEls = [...hlRow(i), ...hlCmp(j)];
+  else if(k==='w') hlEls = hlRow(i);
+  else if(k==='dir' || k==='how') hlEls = hlCol(j);
+  else if(k==='cmp') hlEls = hlCmp(j);
+  hlEls.forEach(el=>el.classList.add('hl'));
+  c.classList.add('hl2'); hlEls.push(c);
+  if(k==='roof' && c !== c.parentNode.lastElementChild && !(edit && edit.el===c)){ c.parentNode.appendChild(c); if(edit && edit.kind==='roof' && edit.el.parentNode===c.parentNode) c.parentNode.appendChild(edit.el); } /* nach oben; bearbeitete Raute bleibt zuoberst */
+});
+house.addEventListener('pointerleave', clearHl);
 house.addEventListener('pointerover', e=>{
   if(!painting || !brush) return;
   const c = e.target.closest('[data-cell]'); if(c && (c.dataset.cell==='rel' || c.dataset.cell==='roof')) applyBrush(c);
@@ -599,8 +708,20 @@ function arm(btn, fn, label){
 }
 
 /* ---------- Tastatur ---------- */
+const fieldList = () => ['[data-whatn]','[data-hown]','[data-howt]','[data-cmpn]'].flatMap(q=>[...house.querySelectorAll(q)]);
 document.addEventListener('keydown', e=>{
   const inField = /^(INPUT|TEXTAREA)$/.test(e.target.tagName) || e.target.isContentEditable;
+  if(e.key==='Tab' && mode!=='eval' && !dlg.open){
+    const list = fieldList(), cur = document.activeElement, title = $('#title');
+    let idx = list.indexOf(cur);
+    if(idx < 0 && cur !== title) return;
+    e.preventDefault();
+    let next = idx + (e.shiftKey ? -1 : 1);
+    if(cur === title) next = e.shiftKey ? list.length-1 : 0;
+    if(next < 0 || next >= list.length){ title.focus(); title.select(); return; }
+    focusEnd(list[next]);
+    return;
+  }
   if(e.key==='Escape'){
     if(!$('#qrBig').hidden) $('#qrBig').hidden = true; else if(inField) e.target.blur(); else if(edit) exitEdit(); else if(brush) setBrush(null);
     return;
@@ -609,7 +730,7 @@ document.addEventListener('keydown', e=>{
   if(!edit || inField) return;
   const k = e.key, {kind} = edit;
   if(k==='Delete' || k==='Backspace' || k==='0'){ if(kind!=='dir'){ e.preventDefault(); commit(0); } return; }
-  if(kind==='w' && /^[1-9]$/.test(k)){ e.preventDefault(); commit(+k); }
+  if(kind==='w' && /^[1-5]$/.test(k)){ e.preventDefault(); commit(+k); }
   else if(kind==='rate' && /^[1-5]$/.test(k)){ e.preventDefault(); commit(+k); }
   else if(kind==='rel' && /^[139]$/.test(k)){ e.preventDefault(); commit(+k); }
   else if(kind==='roof' && (k==='+' || k==='-' || k==='−')){
@@ -691,7 +812,8 @@ function shortCode(){
   const B = new Bits(); writeStruct(B, S);
   const chunks = toB32(B); chunks.push(chk(chunks));
   const str = chunks.map(c=>B32[c]).join('');
-  return 'K' + str.replace(/(.{4})/g,'$1-').replace(/-$/,'');
+  const nm = (S.author||'').replace(/[~\s]+/g,' ').trim();
+  return 'K' + str.replace(/(.{4})/g,'$1-').replace(/-$/,'') + (nm ? '~' + nm : '');
 }
 async function fullCode(){
   const texts = [S.title, ...S.whats.map(w=>w.name), ...S.hows.map(h=>h.name), ...S.hows.map(h=>h.target), ...S.comps.map(x=>x.name)];
@@ -720,7 +842,8 @@ function unpackLegacy(o){
 }
 /* liefert {state, structOnly} */
 async function decodeCode(str){
-  const raw = String(str).trim();
+  let raw = String(str).trim(), name = '';
+  const ti = raw.indexOf('~'); if(ti > 0){ name = raw.slice(ti+1).trim(); raw = raw.slice(0, ti).trim(); }
   const bad = () => new Error('Code unvollständig oder beschädigt.');
   if(/^k/i.test(raw)){
     const t = raw.slice(1).toUpperCase().replace(/[^0-9A-Z]/g,'').replace(/O/g,'0').replace(/[IL]/g,'1');
@@ -728,7 +851,7 @@ async function decodeCode(str){
     const chunks = [...t].map(ch=>B32.indexOf(ch)); if(chunks.includes(-1)) throw bad();
     const c = chunks.pop(); if(chk(chunks)!==c) throw new Error('Prüfzeichen passt nicht – bitte Code vergleichen.');
     const B = new Bits(); chunks.forEach(v=>B.w(v,5));
-    return {state: readStruct(B), structOnly: true};
+    return {state: readStruct(B), structOnly: true, name};
   }
   const s = raw.replace(/\s+/g,'');
   let m;
@@ -743,13 +866,13 @@ async function decodeCode(str){
       try{ texts = new TextDecoder().decode(await pipe(new DecompressionStream('deflate-raw'), rest)).split('\n'); }catch(e){ throw bad(); }
     }
     let k = 0; st.title = texts[k++]||''; st.whats.forEach(w=>{ w.name = texts[k++]||''; }); st.hows.forEach(h=>{ h.name = texts[k++]||''; }); st.hows.forEach(h=>{ h.target = texts[k++]||''; }); st.comps.forEach(x=>{ x.name = texts[k++]||''; });
-    return {state: st, structOnly: false};
+    return {state: st, structOnly: false, name};
   }
   if((m = /^QFD([01])-?([A-Za-z0-9_\-]+)$/.exec(s))){
     let bytes; try{ bytes = fromB64u(m[2]); }catch(e){ throw bad(); }
     if(m[1]==='1'){ if(typeof DecompressionStream==='undefined') throw new Error('Dieser Browser kann den Code nicht lesen.'); try{ bytes = await pipe(new DecompressionStream('deflate-raw'), bytes); }catch(e){ throw bad(); } }
     let obj; try{ obj = JSON.parse(new TextDecoder().decode(bytes)); }catch(e){ throw bad(); }
-    return {state: unpackLegacy(obj), structOnly: false};
+    return {state: unpackLegacy(obj), structOnly: false, name};
   }
   throw new Error('Kein QFD-Code.');
 }
@@ -761,6 +884,7 @@ const standalone = () => window.top===window && /^https?:$/.test(location.protoc
 const shareUrl = code => location.origin + location.pathname + '#' + code;
 $('#btnCode').addEventListener('click', async ()=>{
   exitEdit();
+  $('#author').value = S.author||'';
   currentShort = shortCode();
   $('#shortOut').textContent = currentShort; $('#shortLen').textContent = `${currentShort.replace(/-/g,'').length} Zeichen`;
   codeOut.value = '…'; codeMsg.textContent = ''; codeMsg.className = 'm';
@@ -787,6 +911,7 @@ async function copyText(t, btn, fallbackEl){
   }
   setTimeout(()=>{ btn.textContent = orig; }, 1800);
 }
+$('#author').addEventListener('input', e=>{ S.author = e.target.value; save(); currentShort = shortCode(); $('#shortOut').textContent = currentShort; });
 $('#btnCopyShort').addEventListener('click', e=>copyText(currentShort, e.currentTarget, $('#shortOut')));
 $('#btnCopy').addEventListener('click', e=>copyText(currentCode, e.currentTarget, codeOut));
 $('#btnLink').addEventListener('click', e=>copyText(shareUrl(currentCode), e.currentTarget, codeOut));
@@ -794,7 +919,7 @@ $('#btnLoad').addEventListener('click', async ()=>{
   const txt = codeIn.value.trim();
   if(!txt){ codeMsg.textContent = 'Code fehlt.'; codeMsg.className = 'm err'; return; }
   try{
-    const {state, structOnly} = await decodeCode(txt);
+    const {state, structOnly} = await decodeCode(txt); state.author = S.author||'';
     if(structOnly && state.whats.length===S.whats.length && state.hows.length===S.hows.length){
       state.title = S.title; state.whats.forEach((w,i)=>{ w.name = S.whats[i].name; }); state.hows.forEach((h,j)=>{ h.name = S.hows[j].name; h.target = S.hows[j].target; });
       if(state.comps.length===S.comps.length) state.comps.forEach((x,k)=>{ x.name = S.comps[k].name; });
@@ -809,15 +934,163 @@ codeIn.addEventListener('input', ()=>{ codeMsg.textContent = ''; codeMsg.classNa
 dlg.addEventListener('click', e=>{ if(e.target===dlg) dlg.close(); });
 dlg.addEventListener('close', layout);
 
-$('#btnPrint').addEventListener('click', ()=>{ exitEdit(); window.print(); });
-$('#btnNew').addEventListener('click', e=>arm(e.currentTarget, ()=>{ S = mk(3,3); setBrush(null); fitMode = true; render(); }, 'Alles löschen?'));
+$('#btnNew').addEventListener('click', e=>arm(e.currentTarget, ()=>{ S = mk(3,3); setBrush(null); fitMode = true; render(); const sp = house.querySelector('[data-whatn="0"]'); if(sp) focusEnd(sp); }, 'Alles löschen?'));
 
 /* ---------- Hell / Dunkel ---------- */
 const root = document.documentElement, btnTheme = $('#btnTheme');
-function applyTheme(t){ root.dataset.theme = t; btnTheme.textContent = t==='dark' ? '☀' : '☾'; try{ localStorage.setItem('qfd.theme', t); }catch(e){} }
-btnTheme.addEventListener('click', ()=>applyTheme(root.dataset.theme==='dark' ? 'light' : 'dark'));
+function applyTheme(t, animate){
+  if(animate && !matchMedia('(prefers-reduced-motion: reduce)').matches){ root.classList.add('theming'); clearTimeout(applyTheme._t); applyTheme._t = setTimeout(()=>root.classList.remove('theming'), 450); }
+  root.dataset.theme = t; btnTheme.textContent = t==='dark' ? '☀' : '☾'; try{ localStorage.setItem('qfd.theme', t); }catch(e){} }
+btnTheme.addEventListener('click', ()=>{ applyTheme(root.dataset.theme==='dark' ? 'light' : 'dark', true); btnTheme.classList.remove('spin'); void btnTheme.offsetWidth; btnTheme.classList.add('spin'); });
+btnTheme.addEventListener('animationend', ()=>btnTheme.classList.remove('spin'));
 let theme = 'light'; try{ theme = localStorage.getItem('qfd.theme') || 'light'; }catch(e){}
 applyTheme(theme);
+
+/* ---------- Auswertung ---------- */
+let mode = 'edit';
+const EV = { entries: [], sel: null, cell: null, stats: null };
+const ORD = {0:0,1:1,3:2,9:3}, ORDV = [0,1,3,9];
+const fmt1 = x => x.toFixed(1).replace('.', ',');
+function evSave(){ try{ localStorage.setItem('qfd.eval', JSON.stringify(EV.entries.map(e=>({name:e.name, code:e.code})))); }catch(e){} }
+/* Codes aus beliebigem Text herausfischen (Forms-Tabellen, Chat, mehrere pro Zeile); Name = Rest der Zeile */
+function extractCodes(text){
+  const out = [];
+  const re = /(QFD[01]-?[A-Za-z0-9_\-]{8,}|\b[VW](?=[A-Za-z0-9_\-]*\d)[A-Za-z0-9_\-]{24,}|\bK[0-9A-Z][0-9A-Z\-]{12,})(~[^\t;,\r\n]*)?/g;
+  String(text).split(/\r?\n/).forEach(line=>{
+    let m, rest = line, found = [];
+    while((m = re.exec(line))){ found.push(m); rest = rest.replace(m[0], ' '); }
+    if(!found.length) return;
+    const fields = rest.split(/[\t;,]+/).map(f=>f.replace(/^["'\s]+|["'\s]+$/g,''))
+      .filter(f=>f && !/^[\d.:\/ \-]+$/.test(f) && !/@/.test(f) && !/^\d{1,4}[.\/-]\d{1,2}/.test(f));
+    const lineName = fields.join(' ').replace(/[\s:–\-]+$/,'').trim();
+    found.forEach(m=>out.push({code:m[1], name:(m[2]||'').slice(1).trim() || lineName}));
+  });
+  return out;
+}
+async function evAdd(text){
+  const found = extractCodes(text); let added = 0, dup = 0; const bad = [];
+  for(const f of found){
+    if(EV.entries.some(e=>e.code===f.code)){ dup++; continue; }
+    try{
+      const r = await decodeCode(f.code), st = r.state;
+      if(st.whats.length!==S.whats.length || st.hows.length!==S.hows.length){ bad.push(`${f.name||f.code.slice(0,10)}: ${st.whats.length}×${st.hows.length}`); continue; }
+      EV.entries.push({name: f.name || r.name || '', code: f.code, st}); added++;
+    }catch(e){ bad.push(`${f.code.slice(0,12)}…: ${e.message}`); }
+  }
+  EV.entries.forEach((e,i)=>{ if(!e.name) e.name = '#' + (i+1); });
+  evSave();
+  return {found: found.length, added, dup, bad};
+}
+function evStats(){
+  const m = S.whats.length, n = S.hows.length, c = S.comps.length, E = EV.entries, N = E.length;
+  const cells = Array.from({length:m},()=>Array.from({length:n},()=>({counts:[0,0,0,0], mean:0, raw:0, mode:0, agree:0})));
+  E.forEach(e=>{ for(let i=0;i<m;i++) for(let j=0;j<n;j++) cells[i][j].counts[ORD[e.st.rel[i][j]||0]||0]++; });
+  cells.forEach(row=>row.forEach(cl=>{
+    const ct = cl.counts; if(!N) return;
+    cl.mean = ct.reduce((a,x,k)=>a+x*k,0)/N; cl.raw = ct.reduce((a,x,k)=>a+x*ORDV[k],0)/N;
+    cl.mode = Math.round(cl.mean); cl.agree = ct[cl.mode]/N; cl.tie = false; /* Symbol = gerundeter Mittelwert, Einigkeit = Anteil genau dieses Symbols */
+  }));
+  const roof = Array.from({length:n},()=>Array(n).fill(null));
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const ct = [0,0,0,0,0]; E.forEach(e=>{ ct[(e.st.roof[i][j]||0)+2]++; });
+    const mean = N ? ct.reduce((a,x,k)=>a+x*(k-2),0)/N : 0, md = Math.round(mean) || 0;
+    roof[i][j] = {counts:ct, mean, mode: md, agree: N ? ct[md+2]/N : 0, tie: false};
+  }
+  const rate = Array.from({length:m},()=>Array(c).fill(0));
+  const Ec = E.filter(e=>e.st.comps.length===c);
+  if(Ec.length) for(let i=0;i<m;i++) for(let k=0;k<c;k++) rate[i][k] = Ec.reduce((a,e)=>a+(e.st.rate[i][k]||0),0)/Ec.length;
+  E.forEach(e=>{
+    let d = 0; const contra = [];
+    for(let i=0;i<m;i++) for(let j=0;j<n;j++){
+      const o = ORD[e.st.rel[i][j]||0]||0, cl = cells[i][j]; d += Math.abs(o - cl.mean);
+      if(!cl.tie && cl.agree >= 0.6 && Math.abs(o - cl.mode) >= 2) contra.push([i,j]);
+    }
+    e.dist = m*n ? d/(m*n) : 0; e.contra = contra;
+  });
+  EV.stats = {cells, roof, rate, N};
+}
+function decorateEval(){
+  evStats(); const {cells, roof, rate, N} = EV.stats;
+  const sel = EV.sel!==null && EV.entries[EV.sel] ? EV.entries[EV.sel] : null;
+  house.classList.add('ev');
+  S.whats.forEach((w,i)=>S.hows.forEach((h,j)=>{
+    const el = house.querySelector(`td[data-cell="rel"][data-i="${i}"][data-j="${j}"]`), cl = cells[i][j];
+    if(!sel){
+      const t = N ? cl.mean/3 : 0;
+      el.className = `cell rel hm${t>0.5?' hi':''}`; el.style.setProperty('--t', t.toFixed(3));
+      el.innerHTML = N ? `${cl.tie ? '<span class="dot">?</span>' : (REL[ORDV[cl.mode]]||'<span class="dot">·</span>')}<span class="ag">${Math.round(cl.agree*100)}</span>` : '';
+    } else {
+      const v = sel.st.rel[i][j]||0, o = ORD[v]||0, diff = !cl.tie && o!==cl.mode, contra = sel.contra.some(([a,b])=>a===i&&b===j);
+      el.className = `cell rel v${v}${contra?' contra':diff?' diff':''}`; el.style.removeProperty('--t');
+      el.innerHTML = (REL[v]||'') + (diff ? `<span class="maj">${REL[ORDV[cl.mode]]||'·'}</span>` : '');
+    }
+    if(EV.cell && EV.cell.kind==='rel' && EV.cell.i===i && EV.cell.j===j) el.classList.add('picked');
+  }));
+  const n = S.hows.length;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const g = house.querySelector(`g[data-cell="roof"][data-i="${i}"][data-j="${j}"]`); if(!g) continue;
+    const r = roof[i][j], tx = g.querySelector('text');
+    if(!sel){ g.setAttribute('class', `rc hm ${r.mean>0?'pos':r.mean<0?'neg':''}`); g.style.setProperty('--t', (Math.abs(r.mean)/2).toFixed(3)); tx.textContent = N ? (r.tie ? '?' : (ROOF[r.mode]||'')) : ''; }
+    else { const v = sel.st.roof[i][j]||0; g.setAttribute('class', `rc v${v}`); g.style.removeProperty('--t'); tx.textContent = ROOF[v]||''; }
+    if(EV.cell && EV.cell.kind==='roof' && EV.cell.i===i && EV.cell.j===j) g.classList.add('picked');
+  }
+  S.whats.forEach((w,i)=>S.comps.forEach((x,k)=>{
+    const el = house.querySelector(`td[data-cell="rate"][data-i="${i}"][data-j="${k}"]`); if(!el) return;
+    el.textContent = sel ? (sel.st.comps.length===S.comps.length ? (sel.st.rate[i][k]||'') : '') : (rate[i][k] ? fmt1(rate[i][k]) : '');
+  }));
+  updateFooter(sel ? sel.st.rel : cells.map(row=>row.map(cl=>cl.raw)));
+  evPanel();
+}
+function evPanel(){
+  const order = EV.entries.map((e,i)=>({e,i})).sort((a,b)=>a.e.dist-b.e.dist);
+  let h = `<div class="evrow cls${EV.sel===null?' sel':''}" data-sel="-1"><span class="nm">Klasse</span><span class="d">${EV.entries.length}</span></div>`;
+  h += order.map(({e,i})=>`<div class="evrow${EV.sel===i?' sel':''}" data-sel="${i}"><span class="nm">${esc(e.name)}</span><span class="k">${e.contra.length ? '⚡'+e.contra.length : ''}</span><span class="d">${e.dist.toFixed(2).replace('.',',')}</span></div>`).join('');
+  $('#evList').innerHTML = h;
+  const cd = $('#evCell'), st = EV.stats;
+  if(!EV.cell || !st.N){ cd.innerHTML = ''; return; }
+  if(EV.cell.kind==='rel'){
+    const cl = st.cells[EV.cell.i][EV.cell.j], ct = cl.counts;
+    cd.innerHTML = `<b>${esc(S.whats[EV.cell.i].name)}</b><b>↔ ${esc(S.hows[EV.cell.j].name)}</b><div class="res">` + [3,2,1,0].map(k=>`<span>${REL[ORDV[k]]||'·'} ${ct[k]}</span>`).join('') + `<span>Ø ${fmt1(cl.mean)}</span></div>`;
+  } else {
+    const r = st.roof[EV.cell.i][EV.cell.j], ct = r.counts;
+    cd.innerHTML = `<b>${esc(S.hows[EV.cell.i].name)}</b><b>↔ ${esc(S.hows[EV.cell.j].name)}</b><div class="res">` + [4,3,2,1,0].map(k=>`<span>${ROOF[k-2]||'·'} ${ct[k]}</span>`).join('') + `<span>Ø ${fmt1(r.mean)}</span></div>`;
+  }
+}
+function evClick(e){
+  const cell = e.target.closest('[data-cell]'); if(!cell) return;
+  const k = cell.dataset.cell; if(k!=='rel' && k!=='roof') return;
+  const i = +cell.dataset.i, j = +cell.dataset.j;
+  EV.cell = (EV.cell && EV.cell.kind===k && EV.cell.i===i && EV.cell.j===j) ? null : {kind:k, i, j};
+  decorateEval();
+}
+function setMode(m){
+  mode = m;
+  document.body.classList.toggle('evmode', m==='eval');
+  $('#evpanel').hidden = m!=='eval';
+  $('#btnEval').textContent = m==='eval' ? 'Bearbeiten' : 'Auswertung';
+  $('#btnEval').classList.toggle('primary', m==='eval');
+  if(m==='eval'){ setBrush(null); exitEdit(); }
+  fitMode = true; render();
+}
+$('#btnEval').addEventListener('click', ()=>setMode(mode==='eval' ? 'edit' : 'eval'));
+$('#evAdd').addEventListener('click', async ()=>{
+  const r = await evAdd($('#evIn').value);
+  const msg = $('#evMsg');
+  msg.textContent = r.found ? `${r.added} neu` + (r.dup ? `, ${r.dup} doppelt` : '') + (r.bad.length ? `, ${r.bad.length} unbrauchbar: ${r.bad.join(' · ')}` : '') : 'Kein Code gefunden';
+  msg.className = 'm ' + (r.bad.length ? 'err' : 'ok');
+  if(r.added) $('#evIn').value = '';
+  render();
+});
+$('#evList').addEventListener('click', e=>{
+  const row = e.target.closest('[data-sel]'); if(!row) return;
+  const i = +row.dataset.sel; EV.sel = i < 0 ? null : i; decorateEval();
+});
+$('#evCopy').addEventListener('click', e=>copyText(EV.entries.map(x=>`${x.name}\t${x.code}`).join('\n'), e.currentTarget, $('#evIn')));
+$('#evClear').addEventListener('click', e=>arm(e.currentTarget, ()=>{ EV.entries = []; EV.sel = null; EV.cell = null; evSave(); render(); }, 'Wirklich?'));
+async function evLoad(){
+  let list = []; try{ list = JSON.parse(localStorage.getItem('qfd.eval')||'[]'); }catch(e){}
+  for(const x of list){ try{ const r = await decodeCode(x.code); EV.entries.push({name:x.name||r.name||'', code:x.code, st:r.state}); }catch(e){} }
+}
 
 /* ---------- Start ---------- */
 async function start(hot){
@@ -829,8 +1102,10 @@ async function start(hot){
     if(!S) S = sample();
   }
   setBrush(null); render();
+  evLoad();
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 }
+document.querySelectorAll('.top button, .zoombar button').forEach(b=>{ b.tabIndex = -1; });
 window.claude?.hot?.snapshot?.(()=>S);
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 })();
