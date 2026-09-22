@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>QFD Werkstatt</title>
+<meta name="description" content="House of Quality intuitiv ausfüllen – WAS/WIE erweitern, Felder direkt in der Zelle belegen, Diagramm als Code weitergeben.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
+<style>
+:root{
+  /* hell: Pflaume #602C61 als Hauptakzent, Petrol #14857E als Zweitakzent (Richtung/Bestwert/positive Korrelation) */
+  --bg:#F5F2F5; --surface:#FFFFFF; --surface2:#F1ECF1; --ink:#26192A; --muted:#6F6072;
+  --line:#D5C9D5; --line2:#E8DFE8;
+  --accent:#602C61; --accent-soft:#EBDDEB; --accent-ink:#FFFFFF;
+  --accent2:#14857E; --accent2-soft:#D6EEEB;
+  --pos:#14857E; --pos-soft:#D6EEEB; --neg:#B33A3A; --neg-soft:#F7DFDF;
+  --danger:#B33A3A; --shadow:0 10px 28px rgba(60,30,60,.18);
+  --cw:56px; --rh:48px; --lw:200px; --ww:48px; --aw:44px;
+  --fd:"Barlow Semi Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --fb:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191320; --surface:#231B2A; --surface2:#2C2334; --ink:#EFE8F0; --muted:#A99AAC;
+    --line:#483C4E; --line2:#382E3E;
+    --accent:#C98FCA; --accent-soft:#3F2A41; --accent-ink:#1A1320;
+    --accent2:#4FC6BA; --accent2-soft:#173D39;
+    --pos:#4FC6BA; --pos-soft:#173D39; --neg:#E47777; --neg-soft:#452424;
+    --danger:#E47777; --shadow:0 10px 28px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191320; --surface:#231B2A; --surface2:#2C2334; --ink:#EFE8F0; --muted:#A99AAC;
+  --line:#483C4E; --line2:#382E3E;
+  --accent:#C98FCA; --accent-soft:#3F2A41; --accent-ink:#1A1320;
+  --accent2:#4FC6BA; --accent2-soft:#173D39;
+  --pos:#4FC6BA; --pos-soft:#173D39; --neg:#E47777; --neg-soft:#452424;
+  --danger:#E47777; --shadow:0 10px 28px rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:14px;line-height:1.4;
+  padding-inline:12px;padding-block:0 10px;-webkit-tap-highlight-color:transparent;display:flex;flex-direction:column;min-height:100%}
+button{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--fd);font-weight:600;margin:0;text-wrap:balance}
+.eyebrow{font-family:var(--fd);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.m{color:var(--muted);font-size:12.5px}
+input[type=text]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0}
+input[type=text]:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* ---------- Kopf ---------- */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding-block:10px 8px;border-bottom:1px solid var(--line)}
+.top .brand{display:flex;flex-direction:column;gap:1px;min-width:120px}
+.top .brand h1{font-size:18px;line-height:1.1}
+.top .proj{flex:1 1 200px;display:flex;align-items:center;gap:8px}
+.top .proj input{flex:1;font-family:var(--fd);font-size:16px;font-weight:600}
+.top .actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn{height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:var(--surface2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.armed{background:var(--danger);border-color:var(--danger);color:#fff}
+#btnTheme{width:40px;padding:0;justify-content:center;font-size:17px}
+
+/* ---------- Palette ---------- */
+.palette{padding-block:8px 4px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.grp{display:flex;align-items:center;gap:4px}
+.grp .eyebrow{margin-right:4px}
+.br{height:36px;min-width:36px;padding:0 9px;border:1px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer;
+  font-size:17px;line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;user-select:none}
+.br:hover{background:var(--accent-soft)}
+.br.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.br .sub{font-size:10px;color:var(--muted);font-family:var(--fd)}
+.br.on .sub{color:var(--accent-ink);opacity:.8}
+.br.pos{color:var(--pos)} .br.neg{color:var(--neg)}
+.br.on.pos,.br.on.neg{color:var(--accent-ink)}
+body.brushing .cell,body.brushing .rc{cursor:crosshair}
+.sy{width:18px;height:18px;display:inline-block;vertical-align:middle}
+
+@media (pointer:coarse){
+  .del{width:32px;height:32px;font-size:18px}
+  .add{height:36px;min-width:36px}
+  .what input,.vt[contenteditable]{font-size:16px}
+  .zoombar button{width:40px;height:40px}
+}
+
+/* ---------- Bühne (skaliert, zentriert, zoombar) ---------- */
+.stage{position:relative;flex:1;min-height:240px;overflow:auto;display:flex;border:1px solid var(--line2);border-radius:10px;background:var(--surface2);
+  touch-action:none;overscroll-behavior:contain}
+.zoomer{margin:auto;flex:none;position:relative}
+#house{display:block;width:max-content;transform-origin:0 0}
+.zoombar{position:absolute;right:10px;bottom:10px;z-index:5;display:flex;align-items:center;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.zoombar button{width:34px;height:34px;border-radius:7px;border:1px solid transparent;background:none;cursor:pointer;font-size:17px;line-height:1;font-family:var(--fd);font-weight:600}
+.zoombar button:hover{background:var(--accent2-soft);border-color:var(--accent2);color:var(--accent2)}
+.zoombar .pct{min-width:44px;text-align:center;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ---------- Haus ---------- */
+table.hoq{border-collapse:separate;border-spacing:0;table-layout:fixed;font-variant-numeric:tabular-nums}
+.c-lbl{width:var(--lw)} .c-wgt{width:var(--ww)} .c-how{width:var(--cw)} .c-add{width:var(--aw)}
+.hoq td,.hoq th{border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:0;height:var(--rh);text-align:center;vertical-align:middle;background:var(--surface);font-weight:normal}
+.hoq th.lbl{font-family:var(--fd);font-weight:500;font-size:13px;text-align:right;padding:0 10px;color:var(--muted)}
+.hoq .lbl{border-left:1px solid var(--line2)}
+.hoq tr:first-child td,.hoq tr:first-child th{border-top:1px solid var(--line2)}
+.hoq .addc{background:transparent;border-color:transparent}
+.hoq .blank{background:var(--surface2)}
+.hoq td.ph{background:var(--surface2);color:var(--muted);font-size:12px;padding:6px}
+.cell{cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;font-size:20px;line-height:1}
+@media (hover:hover){ .cell:hover{background:var(--accent-soft)} }
+td.rel{color:var(--accent)}
+td.rel .sy{width:22px;height:22px}
+td.rel.v0:not(.editing):hover::after{content:"·";color:var(--muted)}
+td.editing::after{content:none !important}
+td.wgt{font-family:var(--fd);font-weight:600;font-size:17px}
+td.dir{font-size:17px;color:var(--accent2)}
+.hoq .r-dir td,.hoq .r-dir th{height:32px;background:var(--surface2)}
+.hoq .r-how td,.hoq .r-how th{height:156px;vertical-align:bottom}
+.vt{writing-mode:vertical-rl;transform:rotate(180deg);display:inline-block;max-height:146px;max-width:100%;
+  font-family:var(--fd);font-weight:500;font-size:13px;line-height:1.15;padding:5px 0;overflow:hidden;overflow-wrap:anywhere;text-align:left}
+.vt.small{font-size:12px;color:var(--muted);max-height:70px;font-family:var(--fb);font-weight:normal}
+.vt[contenteditable]{min-height:48px;min-width:1.2em;outline:none;border-radius:4px;cursor:text;padding:5px 2px}
+@media (hover:hover){ .vt[contenteditable]:hover{background:var(--accent-soft)} }
+.vt[contenteditable]:focus{background:var(--surface);box-shadow:0 0 0 2px var(--accent)}
+.hoq .r-tgt td,.hoq .r-tgt th{height:78px;vertical-align:bottom}
+.hoq th.corner{position:relative;text-align:left;padding:0;
+  background-image:linear-gradient(to top right, transparent calc(50% - .6px), var(--line) 50%, transparent calc(50% + .6px));background-color:var(--surface)}
+.hoq th.corner span{position:absolute;font-family:var(--fd);font-size:13px;color:var(--muted);line-height:1.15}
+.hoq th.corner span b{display:block;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:.04em}
+.hoq th.corner .c-wie{top:8px;right:10px;text-align:right}
+.hoq th.corner .c-was{bottom:8px;left:10px}
+.hoq th.corner .gew{display:block;position:absolute;right:0;bottom:0;width:var(--ww);height:var(--rh);line-height:var(--rh);text-align:center;font-size:12px;background:var(--surface2);border-left:1px solid var(--line2);border-top:1px solid var(--line2)}
+.hoq th.free{background:transparent;border-color:transparent}
+.hoq th.cmp-title{text-align:center;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.hoq td.how-h{position:relative}
+.del.col{position:absolute;top:3px;left:50%;transform:translateX(-50%)}
+.hoq td.rate{font-family:var(--fd);font-weight:600;font-size:16px;color:var(--accent2)}
+.hoq .cmp-sep{border-left:2px solid var(--line) !important}
+.what{display:flex;align-items:center;gap:4px;padding:3px 4px 3px 8px;width:100%}
+.what input{flex:1;border-color:transparent;background:transparent;padding:6px 6px;width:100%}
+@media (hover:hover){ .what input:hover{border-color:var(--line)} }
+.what input:focus{background:var(--surface)}
+.del{width:26px;height:26px;border-radius:6px;border:1px solid transparent;background:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;flex:none}
+@media (hover:hover){ .del:hover{color:var(--danger);border-color:var(--danger)} }
+.del.armed{background:var(--danger);color:#fff;border-color:var(--danger)}
+.add{height:32px;min-width:32px;padding:0 8px;border-radius:8px;border:1px dashed var(--accent2);background:transparent;color:var(--accent2);cursor:pointer;font-family:var(--fd);font-weight:600;font-size:15px}
+@media (hover:hover){ .add:hover{background:var(--accent2-soft)} }
+.add.wide{width:100%;text-align:left;padding-left:10px}
+.hoq .r-add td{height:44px;text-align:center}
+.hoq .r-calc td{font-family:var(--fd);font-weight:500;font-size:14px}
+.hoq .r-calc td.top1{background:var(--accent2-soft);color:var(--accent2);font-weight:600}
+.hoq .r-calc.pct td{font-size:13px;color:var(--muted)}
+.hoq .r-roof td{background:transparent;border-color:transparent;height:auto;vertical-align:bottom}
+.hoq .r-roof td.lbl{background:transparent;border-color:transparent}
+.roofsvg{display:block}
+.rc polygon{fill:var(--surface2);stroke:var(--line);stroke-width:1}
+@media (hover:hover){ .rc:hover polygon{fill:var(--accent-soft)} }
+.rc.v1 polygon,.rc.v2 polygon{fill:var(--pos-soft)}
+.rc.v-1 polygon,.rc.v-2 polygon{fill:var(--neg-soft)}
+.rc text{font-family:var(--fd);font-weight:600;font-size:16px;fill:var(--muted);pointer-events:none}
+.rc.v1 text,.rc.v2 text{fill:var(--pos)}
+.rc.v-1 text,.rc.v-2 text{fill:var(--neg)}
+.rc{cursor:pointer}
+.roof-empty{height:14px}
+
+/* ---------- Auswahl in der Zelle (Kandidaten) ---------- */
+td.editing{background:var(--surface2);outline:2px solid var(--accent);outline-offset:-2px}
+td.editing:hover{background:var(--surface2)}
+.cands{display:grid;width:100%;height:calc(var(--rh) - 2px);gap:1px;padding:2px;box-sizing:border-box;grid-auto-rows:minmax(0,1fr);overflow:hidden}
+.r-dir .cands{height:30px}
+.cands.g2{grid-template-columns:1fr 1fr}
+.cands.g3{grid-template-columns:repeat(3,1fr)}
+.cand{border:0;border-radius:4px;background:none;color:var(--muted);opacity:.5;padding:0;margin:0;cursor:pointer;min-width:0;min-height:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:600;font-size:12px;line-height:1}
+td.rel .cand .sy,.cand .sy{width:13px;height:13px}
+.cand.x{font-size:16px}
+@media (hover:hover){ .cand:hover{opacity:1;background:var(--accent-soft);color:var(--accent)} }
+.cand.cur{opacity:1;color:var(--accent);background:var(--accent-soft)}
+.cand.p{color:var(--pos)} .cand.n{color:var(--neg)}
+.rc.editing > polygon{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+.rc.editing > text{display:none}
+.rc .cand{cursor:pointer;pointer-events:all}
+.rc .cand polygon{fill:var(--surface);stroke:var(--line2);stroke-width:1}
+.rc .cand text{fill:var(--muted);opacity:.8;display:block;pointer-events:none;font-family:var(--fd);font-weight:600}
+.rc .cand.p text{fill:var(--pos)} .rc .cand.n text{fill:var(--neg)}
+@media (hover:hover){ .rc .cand:hover polygon{fill:var(--accent-soft)} }
+@media (hover:hover){ .rc .cand:hover text{opacity:1} }
+.rc .cand.cur text{opacity:1}
+.rc .cand.cur polygon{fill:var(--accent-soft)}
+.rc .cand.x circle{fill:var(--line);stroke:var(--surface);stroke-width:2}
+@media (hover:hover){ .rc .cand.x:hover circle{fill:var(--accent)} }
+.rc .cand.x.cur circle{fill:var(--accent)}
+
+
+/* ---------- Dialog ---------- */
+dialog{border:none;border-radius:14px;padding:0;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);width:min(92vw,560px)}
+dialog::backdrop{background:rgba(10,20,30,.45)}
+.dlg{padding:16px 18px 18px;display:flex;flex-direction:column;gap:16px}
+.dlg header{display:flex;align-items:center;justify-content:space-between}
+.dlg header h2{font-size:18px}
+.dlg .x{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:none;cursor:pointer;font-size:18px}
+.dlg section{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line2)}
+.dlg h3{font-size:15px}
+.dlg textarea{width:100%;font:12.5px/1.45 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:8px;
+  word-break:break-all;resize:vertical}
+.dlg .row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.dlg .row .m{flex:1}
+#codeMsg.err{color:var(--danger)} #codeMsg.ok{color:var(--pos)}
+.short{font:600 20px/1.5 ui-monospace,Consolas,Menlo,monospace;letter-spacing:.06em;color:var(--accent);background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-wrap:anywhere;user-select:all}
+.dlg h3 .m{font-weight:normal;font-family:var(--fb);margin-left:6px}
+.qrrow{display:flex;gap:10px;align-items:stretch}
+.qrrow textarea{flex:1;min-width:0}
+.qr{flex:none;width:132px;height:132px;background:#fff;border-radius:8px;padding:6px;cursor:zoom-in;display:flex;align-items:center;justify-content:center}
+.qr:empty{display:none}
+.qr svg{width:100%;height:100%;display:block}
+.qrbig{position:fixed;inset:0;z-index:100;background:#fff;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:4vmin}
+.qrbig svg{width:min(92vmin,100%);height:min(92vmin,100%)}
+@media (max-width:560px){ .qrrow{flex-direction:column} .qr{width:100%;height:auto;aspect-ratio:1;max-width:260px;align-self:center} }
+
+@media (prefers-reduced-motion:no-preference){ .btn,.br,.del,.cand{transition:background .12s,color .12s,border-color .12s,opacity .12s} }
+@media print{
+  .top .actions,.palette,.zoombar,dialog,.qrbig{display:none !important}
+  body{background:#fff;color:#000;padding:0;display:block}
+  .stage{overflow:visible;height:auto !important;border:none;background:none;display:block}
+  .zoomer{width:auto !important;height:auto !important;margin:0}
+  #house{transform:none !important}
+}
+</style>
+
+<div class="top">
+  <div class="brand"><h1>QFD Werkstatt</h1></div>
+  <div class="proj"><input aria-label="Projekt" type="text" id="title" placeholder="Projekt"></div>
+  <div class="actions">
+    <button class="btn primary" id="btnCode" type="button">⌘ Code</button>
+    <button class="btn" id="btnPrint" type="button">Drucken</button>
+    <button class="btn" id="btnNew" type="button">Neu</button>
+    <button class="btn" id="btnTheme" type="button" title="Hell / Dunkel">☾</button>
+  </div>
+</div>
+
+<div class="palette" id="palette">
+  <div class="grp">
+    <button class="br" type="button" data-brush="rel" data-v="9" data-sym="9" title="Stark (9)"></button>
+    <button class="br" type="button" data-brush="rel" data-v="3" data-sym="3" title="Mittel (3)"></button>
+    <button class="br" type="button" data-brush="rel" data-v="1" data-sym="1" title="Schwach (1)"></button>
+  </div>
+  <div class="grp">
+    <button class="br pos" type="button" data-brush="roof" data-v="2" title="Stark positiv">++</button>
+    <button class="br pos" type="button" data-brush="roof" data-v="1" title="Positiv">+</button>
+    <button class="br neg" type="button" data-brush="roof" data-v="-1" title="Negativ">−</button>
+    <button class="br neg" type="button" data-brush="roof" data-v="-2" title="Stark negativ">−−</button>
+  </div>
+  <div class="grp">
+    <button class="br" type="button" data-brush="erase" title="Feld leeren">⌫</button>
+  </div>
+</div>
+
+<div class="stage" id="stage">
+  <div class="zoomer" id="zoomer"><div id="house"></div></div>
+  <div class="zoombar">
+    <button type="button" id="zOut" title="Verkleinern">−</button>
+    <span class="pct" id="zPct">100 %</span>
+    <button type="button" id="zIn" title="Vergrößern">+</button>
+    <button type="button" id="zFit" title="Ganzes Diagramm einpassen">⊡</button>
+  </div>
+</div>
+
+
+<div class="qrbig" id="qrBig" hidden></div>
+
+<dialog id="dlg">
+  <form method="dialog" class="dlg">
+    <header><h2>Code</h2><button class="x" value="close" type="submit" aria-label="Schließen">×</button></header>
+    <section>
+      <h3>Kurzcode <span class="m">ohne Texte</span></h3>
+      <div class="short" id="shortOut"></div>
+      <div class="row"><span id="shortLen" class="m"></span><button type="button" class="btn primary" id="btnCopyShort">Kopieren</button></div>
+    </section>
+    <section>
+      <h3>Vollcode</h3>
+      <div class="qrrow">
+        <div class="qr" id="qrBox" title="Vergrößern"></div>
+        <textarea id="codeOut" rows="6" readonly spellcheck="false"></textarea>
+      </div>
+      <div class="row"><span id="codeLen" class="m"></span>
+        <button type="button" class="btn" id="btnLink" hidden>Link kopieren</button>
+        <button type="button" class="btn primary" id="btnCopy">Kopieren</button></div>
+    </section>
+    <section>
+      <h3>Code eingeben</h3>
+      <textarea id="codeIn" rows="3" placeholder="" spellcheck="false" autocapitalize="characters" autocomplete="off"></textarea>
+      <div class="row"><span id="codeMsg" class="m"></span><button type="button" class="btn primary" id="btnLoad">Laden</button></div>
+    </section>
+  </form>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const REL = {
+  9:'<svg class="sy" viewBox="0 0 20 20" aria-label="stark"><circle cx="10" cy="10" r="7" fill="currentColor"/></svg>',
+  3:'<svg class="sy" viewBox="0 0 20 20" aria-label="mittel"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>',
+  1:'<svg class="sy" viewBox="0 0 20 20" aria-label="schwach"><polygon points="3.5,4.5 16.5,4.5 10,16.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'
+}, RELN = {9:'Stark',3:'Mittel',1:'Schwach'};
+document.querySelectorAll('[data-sym]').forEach(el=>{ el.innerHTML = REL[el.dataset.sym] + el.innerHTML; });
+const ROOF = {2:'++',1:'+','-1':'−','-2':'−−'}, ROOFN = {2:'Stark positiv',1:'Positiv','-1':'Negativ','-2':'Stark negativ'};
+const DIR = {1:'↑','-1':'↓',0:'◇'}, DIRN = {1:'Maximieren','-1':'Minimieren',0:'Zielwert treffen'};
+const LS = 'qfd.werkstatt.state';
+
+let S, brush = null, painting = false, edit = null;
+const house = $('#house'), stage = $('#stage'), zoomer = $('#zoomer'), zPct = $('#zPct');
+
+/* ---------- Zustand ---------- */
+function mk(m, n){
+  return { title:'', whats:Array.from({length:m},()=>({name:'',w:0})),
+    hows:Array.from({length:n},()=>({name:'',dir:1,target:''})),
+    rel:Array.from({length:m},()=>Array(n).fill(0)),
+    roof:Array.from({length:n},()=>Array(n).fill(0)),
+    comps:[], rate:Array.from({length:m},()=>[]) };
+}
+function sample(){
+  const s = mk(5,5);
+  s.title = 'Glas-Ladegabel (Beispiel)';
+  [['Hohe Tragfähigkeit',9],['Geringes Eigengewicht',7],['Schnelles Be- und Entladen',7],['Lange Lebensdauer',5],['Günstiger Preis',4]]
+    .forEach((a,i)=>{ s.whats[i] = {name:a[0], w:a[1]}; });
+  [['Tragkraft',1,'≥ 250 kg'],['Eigengewicht',-1,'≤ 12 kg'],['Federrate',0,'N/mm'],['Anzahl Bauteile',-1,'Stk.'],['Blechstärke',0,'mm']]
+    .forEach((a,j)=>{ s.hows[j] = {name:a[0], dir:a[1], target:a[2]}; });
+  s.rel = [[9,3,3,0,9],[3,9,0,3,9],[0,3,9,1,0],[3,0,3,1,9],[1,3,0,9,3]];
+  s.roof[0][1] = -2; s.roof[0][4] = 2; s.roof[1][4] = -2; s.roof[1][3] = 1; s.roof[2][4] = 1;
+  s.comps = [{name:'Wir'},{name:'Wettbewerber A'}];
+  s.rate = [[4,3],[3,4],[2,4],[4,3],[3,2]];
+  return s;
+}
+function compute(){
+  const n = S.hows.length, abs = Array(n).fill(0);
+  S.whats.forEach((w,i)=>S.hows.forEach((h,j)=>{ abs[j] += (w.w||0) * (S.rel[i][j]||0); }));
+  const total = abs.reduce((a,b)=>a+b,0);
+  const pct = abs.map(a=>total?a/total*100:0);
+  const order = abs.map((a,j)=>j).sort((a,b)=>abs[b]-abs[a]);
+  const rank = Array(n).fill(0); let r = 0;
+  order.forEach((j,k)=>{ if(k===0 || abs[j]!==abs[order[k-1]]) r = k+1; rank[j] = abs[j]>0 ? r : 0; });
+  return {abs, pct, rank};
+}
+let saveT;
+function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }, 250); }
+
+/* ---------- Rendern ---------- */
+const cssPx = name => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 0;
+function roofSvg(n){
+  const CW = cssPx('--cw') || 56, H = n*CW/2, W = n*CW;
+  let s = `<svg class="roofsvg" width="${W}" height="${H+1}" viewBox="0 0 ${W} ${H+1}" aria-label="Korrelationsdach">`;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const cx = (i+j+1)/2*CW, cy = H-(j-i)*CW/2, h = CW/2, v = S.roof[i][j]||0;
+    s += `<g class="rc v${v}" data-cell="roof" data-i="${i}" data-j="${j}" data-cx="${cx}" data-cy="${cy}" data-h="${h}"><polygon points="${cx},${cy-h} ${cx+h},${cy} ${cx},${cy+h} ${cx-h},${cy}"/><text x="${cx}" y="${cy+5.5}" text-anchor="middle">${ROOF[v]||''}</text></g>`;
+  }
+  return s+'</svg>';
+}
+function render(){
+  edit = null;
+  const n = S.hows.length, nc = Math.max(n,1), c = S.comps.length;
+  const hows = f => n ? S.hows.map((h,j)=>f(h,j)).join('') : '';
+  const cmps = f => S.comps.map((x,k)=>f(x,k)).join('');
+  const ph = n ? '' : '<td class="ph"></td>';
+  const gap = `<td class="addc" colspan="${c+1}"></td>`;
+  const tw = cssPx('--lw') + cssPx('--ww') + (nc+c)*cssPx('--cw') + 2*cssPx('--aw');
+  let h = `<table class="hoq" id="hoq" style="width:${tw}px"><colgroup><col class="c-lbl"><col class="c-wgt">${'<col class="c-how">'.repeat(nc)}<col class="c-add">${'<col class="c-how">'.repeat(c)}<col class="c-add"></colgroup><tbody>`;
+  h += `<tr class="r-roof"><td class="lbl" colspan="2"></td><td colspan="${nc}">${n>=2?roofSvg(n):'<div class="roof-empty"></div>'}</td><td class="addc"></td>${gap}</tr>`;
+  h += `<tr class="r-dir"><th class="lbl free" colspan="2">Optimierung</th>${hows((x,j)=>`<td class="cell dir" data-cell="dir" data-j="${j}" title="${DIRN[x.dir]}">${DIR[x.dir]}</td>`)}${ph}<td class="addc"></td>${c ? `<th class="lbl cmp-title cmp-sep" colspan="${c}">Wettbewerb</th><td class="addc"></td>` : gap}</tr>`;
+  h += `<tr class="r-how"><th class="lbl corner" colspan="2"><span class="c-wie"><b>WIE</b>Merkmale</span><span class="c-was"><b>WAS</b>Anforderungen</span><span class="gew">Gew.</span></th>`
+     + hows((x,j)=>`<td class="cell how-h" data-cell="how" data-j="${j}"><button class="del col" type="button" data-act="delHow" data-j="${j}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-hown="${j}">${esc(x.name)}</span></td>`)
+     + (n ? '' : '<td class="ph"></td>')
+     + `<td class="addc"><button class="add" type="button" data-act="addHow" title="Merkmal hinzufügen">+</button></td>`
+     + cmps((x,k)=>`<td class="cell how-h${k===0?' cmp-sep':''}" data-cell="cmp" data-j="${k}"><button class="del col" type="button" data-act="delCmp" data-j="${k}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-cmpn="${k}">${esc(x.name)}</span></td>`)
+     + `<td class="addc"><button class="add" type="button" data-act="addCmp" title="Wettbewerber hinzufügen">+</button></td></tr>`;
+  S.whats.forEach((w,i)=>{
+    h += `<tr><td class="lbl"><div class="what"><input type="text" id="what-${i}" data-name="what" data-i="${i}" value="${esc(w.name)}" placeholder="" autocomplete="off"><button class="del" type="button" data-act="delWhat" data-i="${i}" title="Zeile löschen">×</button></div></td>`
+       + `<td class="cell wgt" data-cell="w" data-i="${i}">${w.w||''}</td>`
+       + hows((x,j)=>{ const v = S.rel[i][j]||0; return `<td class="cell rel v${v}" data-cell="rel" data-i="${i}" data-j="${j}">${REL[v]||''}</td>`; })
+       + ph + `<td class="addc"></td>`
+       + cmps((x,k)=>`<td class="cell rate${k===0?' cmp-sep':''}" data-cell="rate" data-i="${i}" data-j="${k}">${S.rate[i][k]||''}</td>`)
+       + `<td class="addc"></td></tr>`;
+  });
+  h += `<tr class="r-add"><td class="addc" colspan="2"><button class="add" type="button" data-act="addWhat" title="Anforderung hinzufügen">+</button></td><td class="addc" colspan="${nc + c + 2}"></td></tr>`;
+  h += `<tr class="r-tgt"><th class="lbl" colspan="2">Zielwert</th>${hows((x,j)=>`<td class="cell tgt" data-cell="how" data-j="${j}"><span class="vt small" contenteditable="true" spellcheck="false" data-howt="${j}">${esc(x.target)}</span></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
+  h += `<tr class="r-calc abs"><th class="lbl" colspan="2">Bedeutung</th>${hows((x,j)=>`<td data-abs="${j}"></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
+  h += `<tr class="r-calc pct"><th class="lbl" colspan="2">%</th>${hows((x,j)=>`<td data-pct="${j}"></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
+  h += `<tr class="r-calc"><th class="lbl" colspan="2">Rang</th>${hows((x,j)=>`<td data-rank="${j}"></td>`)}${ph}<td class="addc"></td>${gap}</tr>`;
+  h += '</tbody></table>';
+  house.innerHTML = h;
+  house.innerHTML = h;
+  $('#title').value = S.title;
+  updateFooter();
+  layout();
+  save();
+}
+function updateFooter(){
+  const {abs, pct, rank} = compute();
+  S.hows.forEach((x,j)=>{
+    const a = house.querySelector(`[data-abs="${j}"]`), p = house.querySelector(`[data-pct="${j}"]`), r = house.querySelector(`[data-rank="${j}"]`);
+    if(!a) return;
+    a.textContent = abs[j]; a.classList.toggle('top1', rank[j]===1);
+    p.textContent = abs[j] ? pct[j].toLocaleString('de-DE',{maximumFractionDigits:1}) : '';
+    r.textContent = rank[j] || '';
+  });
+}
+/* eine Zelle aus dem Zustand neu zeichnen (auch: Bearbeitungsmodus verlassen) */
+function paintCell(kind, i, j){
+  if(kind==='rel'){ const el = house.querySelector(`td[data-cell="rel"][data-i="${i}"][data-j="${j}"]`); if(!el) return; const v = S.rel[i][j]||0; el.className = `cell rel v${v}`; el.innerHTML = REL[v]||''; }
+  else if(kind==='w'){ const el = house.querySelector(`td[data-cell="w"][data-i="${i}"]`); if(!el) return; el.className = 'cell wgt'; el.textContent = S.whats[i].w||''; }
+  else if(kind==='dir'){ const el = house.querySelector(`td[data-cell="dir"][data-j="${j}"]`); if(!el) return; el.className = 'cell dir'; el.textContent = DIR[S.hows[j].dir]; el.title = DIRN[S.hows[j].dir]; }
+  else if(kind==='rate'){ const el = house.querySelector(`td[data-cell="rate"][data-i="${i}"][data-j="${j}"]`); if(!el) return; el.classList.remove('editing'); el.textContent = S.rate[i][j]||''; }
+  else if(kind==='roof'){ const g = house.querySelector(`g[data-cell="roof"][data-i="${i}"][data-j="${j}"]`); if(!g) return; const v = S.roof[i][j]||0; g.setAttribute('class', `rc v${v}`); g.querySelectorAll('.cands').forEach(c=>c.remove()); g.querySelector('text').textContent = ROOF[v]||''; }
+}
+
+/* ---------- Bühne: Bildschirmgröße abfragen, einpassen, zoomen ---------- */
+let scale = 1, fitMode = true, natW = 0, natH = 0;
+function stageSize(){
+  const top = stage.getBoundingClientRect().top;
+  stage.style.height = Math.max(240, window.innerHeight - top - 10) + 'px';
+}
+function measure(){ const t = $('#hoq'); if(!t) return; natW = t.offsetWidth; natH = t.offsetHeight; }
+function applyScale(s, keepCenter){
+  const s0 = scale; scale = Math.max(0.2, Math.min(4, s));
+  const cx = (stage.scrollLeft + stage.clientWidth/2)/s0, cy = (stage.scrollTop + stage.clientHeight/2)/s0;
+  house.style.transform = `scale(${scale})`;
+  zoomer.style.width = natW*scale + 'px'; zoomer.style.height = natH*scale + 'px';
+  if(keepCenter){ stage.scrollLeft = cx*scale - stage.clientWidth/2; stage.scrollTop = cy*scale - stage.clientHeight/2; }
+  zPct.textContent = Math.round(scale*100) + ' %';
+}
+function fit(){
+  fitMode = true; measure(); if(!natW) return;
+  const s = Math.min((stage.clientWidth-16)/natW, (stage.clientHeight-16)/natH);
+  applyScale(Math.min(s, 2.5), false);
+}
+function layout(){ stageSize(); measure(); if(fitMode) fit(); else applyScale(scale, true); }
+function zoomBy(f){ fitMode = false; applyScale(scale*f, true); }
+const coarse = () => matchMedia('(pointer:coarse)').matches;
+function zoomToCell(el){
+  const r = el.getBoundingClientRect(); if(r.width >= 76) return;
+  fitMode = false; applyScale(scale * 84 / r.width, true);
+  const r2 = el.getBoundingClientRect(), st = stage.getBoundingClientRect();
+  stage.scrollLeft += (r2.left + r2.width/2) - (st.left + st.width/2);
+  stage.scrollTop += (r2.top + r2.height/2) - (st.top + st.height/2);
+}
+$('#zIn').addEventListener('click', ()=>zoomBy(1.25));
+$('#zOut').addEventListener('click', ()=>zoomBy(1/1.25));
+$('#zFit').addEventListener('click', fit);
+stage.addEventListener('wheel', e=>{ if(e.ctrlKey || e.metaKey){ e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.1 : 1/1.1); } }, {passive:false});
+/* Touch: ein Finger schiebt, zwei Finger zoomen */
+const pts = new Map(); let pinch0 = null, pan0 = null;
+const dist = () => { const a = [...pts.values()]; return Math.hypot(a[0][0]-a[1][0], a[0][1]-a[1][1]); };
+stage.addEventListener('pointerdown', e=>{
+  if(e.pointerType!=='touch') return;
+  pts.set(e.pointerId, [e.clientX, e.clientY]);
+  if(pts.size===1) pan0 = {x:e.clientX, y:e.clientY, sl:stage.scrollLeft, st:stage.scrollTop};
+  if(pts.size===2){ pinch0 = {d:dist(), s:scale}; pan0 = null; }
+});
+stage.addEventListener('pointermove', e=>{
+  if(!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId, [e.clientX, e.clientY]);
+  if(pts.size===2 && pinch0){ fitMode = false; applyScale(pinch0.s * dist()/pinch0.d, true); }
+  else if(pts.size===1 && pan0){ stage.scrollLeft = pan0.sl - (e.clientX - pan0.x); stage.scrollTop = pan0.st - (e.clientY - pan0.y); }
+});
+const endTouch = e => { pts.delete(e.pointerId); if(pts.size<2) pinch0 = null; if(pts.size===0) pan0 = null; };
+stage.addEventListener('pointerup', endTouch); stage.addEventListener('pointercancel', endTouch);
+window.addEventListener('resize', ()=>{ exitEdit(); layout(); });
+
+/* ---------- Änderungen ---------- */
+function setRel(i,j,v){ S.rel[i][j] = v; paintCell('rel',i,j); updateFooter(); save(); }
+function setRoof(i,j,v){ S.roof[i][j] = v; paintCell('roof',i,j); save(); }
+function setW(i,v){ S.whats[i].w = v; paintCell('w',i); updateFooter(); save(); }
+function setDir(j,v){ S.hows[j].dir = v; paintCell('dir',null,j); save(); }
+function setRate(i,k,v){ S.rate[i][k] = v; paintCell('rate',i,k); save(); }
+function addWhat(){
+  S.whats.push({name:'',w:0}); S.rel.push(Array(S.hows.length).fill(0)); S.rate.push(Array(S.comps.length).fill(0)); render();
+  const inp = $(`#what-${S.whats.length-1}`); if(inp) inp.focus({preventScroll:true});
+}
+function addHow(){
+  S.hows.push({name:'',dir:1,target:''}); S.rel.forEach(r=>r.push(0));
+  S.roof.forEach(r=>r.push(0)); S.roof.push(Array(S.hows.length).fill(0)); render();
+  const sp = house.querySelector(`[data-hown="${S.hows.length-1}"]`); if(sp) focusEnd(sp);
+}
+function delWhat(i){ S.whats.splice(i,1); S.rel.splice(i,1); S.rate.splice(i,1); render(); }
+function addCmp(){
+  S.comps.push({name:''}); S.rate.forEach(r=>r.push(0)); render();
+  const sp = house.querySelector(`[data-cmpn="${S.comps.length-1}"]`); if(sp) focusEnd(sp);
+}
+function delCmp(k){ S.comps.splice(k,1); S.rate.forEach(r=>r.splice(k,1)); render(); }
+function delHow(j){ S.hows.splice(j,1); S.rel.forEach(r=>r.splice(j,1)); S.roof.splice(j,1); S.roof.forEach(r=>r.splice(j,1)); render(); }
+
+/* ---------- Stempel ---------- */
+function setBrush(b){
+  brush = b;
+  document.querySelectorAll('.br').forEach(el=>el.classList.toggle('on', !!b && el.dataset.brush===b.kind && (b.kind==='erase' || +el.dataset.v===b.v)));
+  document.body.classList.toggle('brushing', !!b);
+}
+function applyBrush(el){
+  const k = el.dataset.cell, i = +el.dataset.i, j = +el.dataset.j;
+  if(brush.kind==='erase'){
+    if(k==='rel') setRel(i,j,0); else if(k==='roof') setRoof(i,j,0); else if(k==='w') setW(i,0); else if(k==='rate') setRate(i,j,0); else return false;
+    return true;
+  }
+  if(brush.kind!==k) return false;
+  if(k==='rel') setRel(i,j,brush.v); else if(k==='roof') setRoof(i,j,brush.v);
+  return true;
+}
+$('#palette').addEventListener('click', e=>{
+  const b = e.target.closest('.br'); if(!b) return;
+  const nb = {kind:b.dataset.brush, v:+b.dataset.v};
+  setBrush(brush && brush.kind===nb.kind && (nb.kind==='erase' || brush.v===nb.v) ? null : nb);
+  exitEdit();
+});
+
+/* ---------- Auswahl direkt in der Zelle ---------- */
+function candHtml(kind, cur){
+  const c = (inner, v, cls='') => `<button type="button" class="cand ${cls}${cur===v?' cur':''}" data-set="${v}">${inner}</button>`;
+  if(kind==='rel') return `<div class="cands g2">${c(REL[9],9)}${c(REL[3],3)}${c(REL[1],1)}${c('·',0,'x')}</div>`;
+  if(kind==='w')   return `<div class="cands g3">${[1,2,3,4,5,6,7,8,9].map(n=>c(n,n)).join('')}</div>`;
+  if(kind==='dir') return `<div class="cands g3">${[1,-1,0].map(d=>c(DIR[d],d)).join('')}</div>`;
+  if(kind==='rate') return `<div class="cands g3">${[1,2,3,4,5].map(n=>c(n,n)).join('')}</div>`;
+  return '';
+}
+function enterEdit(el){
+  exitEdit();
+  const kind = el.dataset.cell, i = +el.dataset.i, j = +el.dataset.j;
+  edit = {kind, i, j, el};
+  if(kind==='roof'){
+    /* vier Teilrauten in den Ecken (Trennlinien parallel zu den Seiten): oben ++, links +, rechts −, unten −−; Mittelpunkt = leer */
+    const cur = S.roof[i][j]||0, cx = +el.dataset.cx, cy = +el.dataset.cy, h = +el.dataset.h, q = h/2, fs = (h*0.62).toFixed(1);
+    const sub = (x,y) => `${x},${y-q} ${x+q},${y} ${x},${y+q} ${x-q},${y}`;
+    const quads = [[2,'p',cx,cy-q],[1,'p',cx-q,cy],[-1,'n',cx+q,cy],[-2,'n',cx,cy+q]].map(([v,cls,x,y])=>[v,cls,sub(x,y),x,y]);
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','cands');
+    g.innerHTML = quads.map(([v,cls,pts,x,y])=>`<g class="cand ${cls}${cur===v?' cur':''}" data-set="${v}"><polygon points="${pts}"/><text x="${x}" y="${y}" dy="0.36em" text-anchor="middle" font-size="${fs}">${ROOF[v]}</text></g>`).join('')
+      + `<g class="cand x${cur===0?' cur':''}" data-set="0"><circle cx="${cx}" cy="${cy}" r="${(h*0.2).toFixed(1)}"/></g>`;
+    el.appendChild(g); el.classList.add('editing');
+  } else {
+    const cur = kind==='rel' ? (S.rel[i][j]||0) : kind==='w' ? (S.whats[i].w||0) : kind==='rate' ? (S.rate[i][j]||0) : S.hows[j].dir;
+    el.innerHTML = candHtml(kind, cur); el.classList.add('editing');
+  }
+  if(coarse()) zoomToCell(el);
+}
+function exitEdit(){ if(!edit) return; const e = edit; edit = null; paintCell(e.kind, e.i, e.j); }
+function commit(v){
+  if(!edit) return; const {kind,i,j} = edit;
+  if(kind==='rel') setRel(i,j,v); else if(kind==='roof') setRoof(i,j,v); else if(kind==='w') setW(i,v); else if(kind==='dir') setDir(j,v); else if(kind==='rate') setRate(i,j,v);
+  edit = null; /* paintCell in set* hat die Zelle schon normal gezeichnet */
+}
+
+/* ---------- Ereignisse im Haus ---------- */
+house.addEventListener('click', e=>{
+  const act = e.target.closest('[data-act]');
+  if(act){
+    if(act.dataset.act==='addWhat') addWhat();
+    else if(act.dataset.act==='addHow') addHow();
+    else if(act.dataset.act==='delWhat') arm(act, ()=>delWhat(+act.dataset.i), '?');
+    else if(act.dataset.act==='delHow') arm(act, ()=>delHow(+act.dataset.j), '?');
+    else if(act.dataset.act==='addCmp') addCmp();
+    else if(act.dataset.act==='delCmp') arm(act, ()=>delCmp(+act.dataset.j), '?');
+    return;
+  }
+  const cand = e.target.closest('[data-set]');
+  if(cand && edit && edit.el.contains(cand)){
+    const v = +cand.dataset.set;
+    commit(v);
+    return;
+  }
+  const cell = e.target.closest('[data-cell]'); if(!cell) return;
+  if(brush && applyBrush(cell)) return;
+  if(cell.dataset.cell==='how' || cell.dataset.cell==='cmp'){ exitEdit(); const sp = cell.querySelector('[contenteditable]'); if(sp && document.activeElement!==sp) focusEnd(sp); return; }
+  if(edit && edit.el===cell) return;
+  enterEdit(cell);
+});
+function focusEnd(el){ el.focus(); try{ const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }catch(e){} }
+house.addEventListener('input', e=>{
+  const t = e.target, d = t.dataset;
+  if(d.name==='what'){ S.whats[+d.i].name = t.value; save(); return; }
+  const txt = t.textContent.replace(/[\r\n]+/g,' ');
+  if(d.hown!==undefined) S.hows[+d.hown].name = txt;
+  else if(d.howt!==undefined) S.hows[+d.howt].target = txt;
+  else if(d.cmpn!==undefined) S.comps[+d.cmpn].name = txt;
+  else return;
+  save();
+});
+house.addEventListener('focusout', e=>{ const t = e.target; if(t.isContentEditable){ const txt = t.textContent.replace(/[\r\n]+/g,' ').trim(); if(t.textContent!==txt) t.textContent = txt; } });
+house.addEventListener('paste', e=>{ if(!e.target.isContentEditable) return; e.preventDefault(); const txt = (e.clipboardData||window.clipboardData).getData('text').replace(/[\r\n]+/g,' '); document.execCommand('insertText', false, txt); });
+house.addEventListener('pointerdown', e=>{ if(brush && e.pointerType==='mouse' && e.target.closest('[data-cell]')) painting = true; });
+document.addEventListener('pointerup', ()=>{ painting = false; });
+house.addEventListener('pointerover', e=>{
+  if(!painting || !brush) return;
+  const c = e.target.closest('[data-cell]'); if(c && (c.dataset.cell==='rel' || c.dataset.cell==='roof')) applyBrush(c);
+});
+$('#title').addEventListener('input', e=>{ S.title = e.target.value; save(); });
+
+/* zweistufiges Löschen / Zurücksetzen */
+function arm(btn, fn, label){
+  if(btn.classList.contains('armed')){ btn.classList.remove('armed'); clearTimeout(btn._t); fn(); return; }
+  btn.classList.add('armed'); btn._orig = btn.textContent; if(label) btn.textContent = label;
+  btn._t = setTimeout(()=>{ btn.classList.remove('armed'); btn.textContent = btn._orig; }, 3000);
+}
+
+/* ---------- Tastatur ---------- */
+document.addEventListener('keydown', e=>{
+  const inField = /^(INPUT|TEXTAREA)$/.test(e.target.tagName) || e.target.isContentEditable;
+  if(e.key==='Escape'){
+    if(!$('#qrBig').hidden) $('#qrBig').hidden = true; else if(inField) e.target.blur(); else if(edit) exitEdit(); else if(brush) setBrush(null);
+    return;
+  }
+  if(e.key==='Enter' && e.target.isContentEditable){ e.preventDefault(); e.target.blur(); return; }
+  if(!edit || inField) return;
+  const k = e.key, {kind} = edit;
+  if(k==='Delete' || k==='Backspace' || k==='0'){ if(kind!=='dir'){ e.preventDefault(); commit(0); } return; }
+  if(kind==='w' && /^[1-9]$/.test(k)){ e.preventDefault(); commit(+k); }
+  else if(kind==='rate' && /^[1-5]$/.test(k)){ e.preventDefault(); commit(+k); }
+  else if(kind==='rel' && /^[139]$/.test(k)){ e.preventDefault(); commit(+k); }
+  else if(kind==='roof' && (k==='+' || k==='-' || k==='−')){
+    e.preventDefault(); const {i,j} = edit, cur = S.roof[i][j]||0, sign = k==='+' ? 1 : -1;
+    /* gleiches Vorzeichen nochmal = stark */
+    commit(cur*sign>0 ? sign*2 : sign);
+  }
+  else if(kind==='dir'){ if(k==='ArrowUp'){ e.preventDefault(); commit(1); } else if(k==='ArrowDown'){ e.preventDefault(); commit(-1); } else if(k==='ArrowRight' || k==='ArrowLeft'){ e.preventDefault(); commit(0); } }
+});
+document.addEventListener('pointerdown', e=>{ if(edit && !edit.el.contains(e.target)) exitEdit(); });
+
+/* ---------- Code: Bit-Packung ---------- */
+class Bits{
+  constructor(){ this.b = []; this.pos = 0; }
+  static fromBytes(bytes){ const B = new Bits(); for(const x of bytes) for(let k=7;k>=0;k--) B.b.push((x>>k)&1); return B; }
+  w(v,n){ for(let k=n-1;k>=0;k--) this.b.push((v>>k)&1); return this; }
+  r(n){ let v = 0; for(let k=0;k<n;k++) v = (v<<1) | (this.b[this.pos++]||0); return v; }
+  get left(){ return this.b.length - this.pos; }
+  align(n){ while(this.pos % n) this.pos++; }
+  bytes(){ const out = new Uint8Array(Math.ceil(this.b.length/8)); this.b.forEach((x,i)=>{ out[i>>3] |= x << (7-(i&7)); }); return out; }
+}
+const RELI = {0:0,1:1,3:2,9:3}, RELV = [0,1,3,9], DIRI = {0:0,1:1,'-1':2}, DIRV = [0,1,-1];
+/* Struktur: m,n (6 Bit) · Gewichte 4 Bit · Richtungen 2 Bit · Beziehungen 2 Bit · Dach: 3 Werte (0–4) je 7 Bit */
+function writeStruct(B, st){
+  const m = st.whats.length, n = st.hows.length;
+  B.w(m,6).w(n,6);
+  st.whats.forEach(w=>B.w(w.w||0,4));
+  st.hows.forEach(h=>B.w(DIRI[h.dir]||0,2));
+  for(let i=0;i<m;i++) for(let j=0;j<n;j++) B.w(RELI[st.rel[i][j]||0]||0,2);
+  const rv = []; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) rv.push((st.roof[i][j]||0)+2);
+  for(let k=0;k<rv.length;k+=3) B.w((rv[k]||0)*25 + (rv[k+1]||0)*5 + (rv[k+2]||0), 7);
+  const c = Math.min(15, st.comps.length); B.w(c,4);
+  for(let i=0;i<m;i++) for(let k=0;k<c;k++) B.w(Math.min(7, st.rate[i][k]||0), 3);
+}
+function readStruct(B){
+  const m = B.r(6), n = B.r(6);
+  if(B.left < m*4 + n*2 + m*n*2) throw new Error('Code unvollständig.');
+  const st = mk(m,n);
+  st.whats.forEach(w=>{ w.w = B.r(4); });
+  st.hows.forEach(h=>{ h.dir = DIRV[B.r(2)] ?? 1; });
+  for(let i=0;i<m;i++) for(let j=0;j<n;j++) st.rel[i][j] = RELV[B.r(2)];
+  const cnt = n*(n-1)/2, rv = [];
+  for(let k=0;k<cnt;k+=3){ let v = B.r(7); rv.push(Math.floor(v/25)); v %= 25; rv.push(Math.floor(v/5)); rv.push(v%5); }
+  let k = 0; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) { const x = rv[k++]; st.roof[i][j] = x===undefined ? 0 : Math.max(-2, Math.min(2, x-2)); }
+  const c = B.r(4); st.comps = Array.from({length:c},()=>({name:''}));
+  st.rate = Array.from({length:m},()=>Array.from({length:c},()=>Math.min(5, B.r(3))));
+  return st;
+}
+/* Texte: 6-Bit-Alphabet, 61 = Großbuchstabe folgt, 62 = beliebiges Zeichen (16 Bit), 63 = Ende */
+const ALPHA = " abcdefghijklmnopqrstuvwxyzäöüß0123456789-.,/()%+:;=<>≥≤°×µ'\"";
+function writeText(B, str){
+  for(const ch of String(str)){
+    const lo = ch.toLowerCase(); let idx = ALPHA.indexOf(lo);
+    if(idx >= 0 && lo.length===1 && ch.length===1){ if(ch !== lo) B.w(61,6); B.w(idx,6); }
+    else { const cu = ch.charCodeAt(0); if(ch.length===1 && cu < 65536){ B.w(62,6).w(cu,16); } else { for(const u of ch){ B.w(62,6).w(u.charCodeAt(0),16); } } }
+  }
+  B.w(63,6);
+}
+function readText(B){
+  let out = '', up = false;
+  while(B.left >= 6){
+    const c = B.r(6);
+    if(c===63) break;
+    if(c===61){ up = true; continue; }
+    if(c===62){ out += String.fromCharCode(B.r(16)); continue; }
+    let ch = ALPHA[c] || ''; if(up){ ch = ch.toUpperCase(); up = false; } out += ch;
+  }
+  return out;
+}
+/* Kurzcode: Crockford-Base32, Vierergruppen, Prüfzeichen */
+const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+function toB32(B){ const chunks = []; while(B.b.length % 5) B.b.push(0); for(let i=0;i<B.b.length;i+=5){ let v=0; for(let k=0;k<5;k++) v=(v<<1)|B.b[i+k]; chunks.push(v); } return chunks; }
+const chk = chunks => chunks.reduce((h,c,i)=>(h + (i%30+1)*c) % 31, 0);
+function b64u(bytes){ let s=''; for(let i=0;i<bytes.length;i+=0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function fromB64u(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s += '='; const bin = atob(s); const out = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) out[i] = bin.charCodeAt(i); return out; }
+async function pipe(stream, bytes){ const p = new Response(stream.readable).arrayBuffer(); const w = stream.writable.getWriter(); await w.write(bytes); await w.close(); return new Uint8Array(await p); }
+
+function shortCode(){
+  const B = new Bits(); writeStruct(B, S);
+  const chunks = toB32(B); chunks.push(chk(chunks));
+  const str = chunks.map(c=>B32[c]).join('');
+  return 'K' + str.replace(/(.{4})/g,'$1-').replace(/-$/,'');
+}
+async function fullCode(){
+  const texts = [S.title, ...S.whats.map(w=>w.name), ...S.hows.map(h=>h.name), ...S.hows.map(h=>h.target), ...S.comps.map(x=>x.name)];
+  const B = new Bits(); writeStruct(B, S); texts.forEach(t=>writeText(B, t));
+  let best = 'V' + b64u(B.bytes());
+  if(typeof CompressionStream!=='undefined'){
+    try{
+      const A = new Bits(); writeStruct(A, S); const head = A.bytes();
+      const z = await pipe(new CompressionStream('deflate-raw'), new TextEncoder().encode(texts.join('\n')));
+      const all = new Uint8Array(head.length + z.length); all.set(head); all.set(z, head.length);
+      const w = 'W' + b64u(all); if(w.length < best.length) best = w;
+    }catch(e){}
+  }
+  return best;
+}
+const clampInt = (v,lo,hi,d) => { v = Math.round(+v); return isNaN(v) ? d : Math.max(lo, Math.min(hi, v)); };
+function unpackLegacy(o){
+  if(!o || o.v!==1 || !Array.isArray(o.w) || !Array.isArray(o.h)) throw new Error('Kein QFD-Code.');
+  const whats = o.w.map(a=>({name:String(a[0]??''), w:clampInt(a[1],0,9,5)}));
+  const hows = o.h.map(a=>({name:String(a[0]??''), dir:[1,-1,0].includes(+a[1])?+a[1]:1, target:String(a[2]??'')}));
+  const m = whats.length, n = hows.length, r = String(o.r||''), c = String(o.c||'');
+  const rel = Array.from({length:m},(_,i)=>Array.from({length:n},(_,j)=>{ const v = +r[i*n+j]; return [1,3,9].includes(v)?v:0; }));
+  const roof = Array.from({length:n},()=>Array(n).fill(0)); let k = 0;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const v = +c[k++]-2; roof[i][j] = isNaN(v)?0:Math.max(-2,Math.min(2,v)); }
+  return {title:String(o.t||''), whats, hows, rel, roof, comps:[], rate:whats.map(()=>[])};
+}
+/* liefert {state, structOnly} */
+async function decodeCode(str){
+  const raw = String(str).trim();
+  const bad = () => new Error('Code unvollständig oder beschädigt.');
+  if(/^k/i.test(raw)){
+    const t = raw.slice(1).toUpperCase().replace(/[^0-9A-Z]/g,'').replace(/O/g,'0').replace(/[IL]/g,'1');
+    if(t.length < 4) throw bad();
+    const chunks = [...t].map(ch=>B32.indexOf(ch)); if(chunks.includes(-1)) throw bad();
+    const c = chunks.pop(); if(chk(chunks)!==c) throw new Error('Prüfzeichen passt nicht – bitte Code vergleichen.');
+    const B = new Bits(); chunks.forEach(v=>B.w(v,5));
+    return {state: readStruct(B), structOnly: true};
+  }
+  const s = raw.replace(/\s+/g,'');
+  let m;
+  if((m = /^([VW])([A-Za-z0-9_\-]+)$/.exec(s))){
+    let bytes; try{ bytes = fromB64u(m[2]); }catch(e){ throw bad(); }
+    const B = Bits.fromBytes(bytes), st = readStruct(B);
+    let texts;
+    if(m[1]==='V'){ texts = []; const cnt = 1 + st.whats.length + 2*st.hows.length + st.comps.length; for(let k=0;k<cnt;k++) texts.push(readText(B)); }
+    else {
+      if(typeof DecompressionStream==='undefined') throw new Error('Dieser Browser kann den Code nicht lesen.');
+      B.align(8); const rest = bytes.subarray(B.pos/8);
+      try{ texts = new TextDecoder().decode(await pipe(new DecompressionStream('deflate-raw'), rest)).split('\n'); }catch(e){ throw bad(); }
+    }
+    let k = 0; st.title = texts[k++]||''; st.whats.forEach(w=>{ w.name = texts[k++]||''; }); st.hows.forEach(h=>{ h.name = texts[k++]||''; }); st.hows.forEach(h=>{ h.target = texts[k++]||''; }); st.comps.forEach(x=>{ x.name = texts[k++]||''; });
+    return {state: st, structOnly: false};
+  }
+  if((m = /^QFD([01])-?([A-Za-z0-9_\-]+)$/.exec(s))){
+    let bytes; try{ bytes = fromB64u(m[2]); }catch(e){ throw bad(); }
+    if(m[1]==='1'){ if(typeof DecompressionStream==='undefined') throw new Error('Dieser Browser kann den Code nicht lesen.'); try{ bytes = await pipe(new DecompressionStream('deflate-raw'), bytes); }catch(e){ throw bad(); } }
+    let obj; try{ obj = JSON.parse(new TextDecoder().decode(bytes)); }catch(e){ throw bad(); }
+    return {state: unpackLegacy(obj), structOnly: false};
+  }
+  throw new Error('Kein QFD-Code.');
+}
+
+/* ---------- Dialog ---------- */
+const dlg = $('#dlg'), codeOut = $('#codeOut'), codeIn = $('#codeIn'), codeMsg = $('#codeMsg');
+let currentCode = '', currentShort = '';
+const standalone = () => window.top===window && /^https?:$/.test(location.protocol);
+const shareUrl = code => location.origin + location.pathname + '#' + code;
+$('#btnCode').addEventListener('click', async ()=>{
+  exitEdit();
+  currentShort = shortCode();
+  $('#shortOut').textContent = currentShort; $('#shortLen').textContent = `${currentShort.replace(/-/g,'').length} Zeichen`;
+  codeOut.value = '…'; codeMsg.textContent = ''; codeMsg.className = 'm';
+  dlg.showModal();
+  currentCode = await fullCode();
+  codeOut.value = currentCode;
+  $('#codeLen').textContent = `${currentCode.length} Zeichen`;
+  $('#qrBox').innerHTML = qrSvg(standalone() ? shareUrl(currentCode) : currentCode);
+  $('#btnLink').hidden = !standalone();
+});
+function qrSvg(text){
+  if(typeof qrcode!=='function') return '';
+  try{ const q = qrcode(0, 'M'); q.addData(text, 'Byte'); q.make(); return q.createSvgTag({cellSize:4, margin:0, scalable:true}); }catch(e){ return ''; }
+}
+$('#qrBox').addEventListener('click', ()=>{ const b = $('#qrBig'); b.innerHTML = $('#qrBox').innerHTML; if(!b.innerHTML) return; dlg.close(); b.hidden = false; });
+$('#qrBig').addEventListener('click', ()=>{ $('#qrBig').hidden = true; });
+async function copyText(t, btn, fallbackEl){
+  const orig = btn.textContent;
+  try{ await navigator.clipboard.writeText(t); btn.textContent = 'Kopiert ✓'; }
+  catch(e){
+    let ok = false;
+    try{ const sel = window.getSelection(), rg = document.createRange(); rg.selectNodeContents(fallbackEl); sel.removeAllRanges(); sel.addRange(rg); ok = document.execCommand('copy'); }catch(e2){}
+    btn.textContent = ok ? 'Kopiert ✓' : 'Markiert – Strg+C';
+  }
+  setTimeout(()=>{ btn.textContent = orig; }, 1800);
+}
+$('#btnCopyShort').addEventListener('click', e=>copyText(currentShort, e.currentTarget, $('#shortOut')));
+$('#btnCopy').addEventListener('click', e=>copyText(currentCode, e.currentTarget, codeOut));
+$('#btnLink').addEventListener('click', e=>copyText(shareUrl(currentCode), e.currentTarget, codeOut));
+$('#btnLoad').addEventListener('click', async ()=>{
+  const txt = codeIn.value.trim();
+  if(!txt){ codeMsg.textContent = 'Code fehlt.'; codeMsg.className = 'm err'; return; }
+  try{
+    const {state, structOnly} = await decodeCode(txt);
+    if(structOnly && state.whats.length===S.whats.length && state.hows.length===S.hows.length){
+      state.title = S.title; state.whats.forEach((w,i)=>{ w.name = S.whats[i].name; }); state.hows.forEach((h,j)=>{ h.name = S.hows[j].name; h.target = S.hows[j].target; });
+      if(state.comps.length===S.comps.length) state.comps.forEach((x,k)=>{ x.name = S.comps[k].name; });
+    }
+    S = state; setBrush(null); fitMode = true; render();
+    codeMsg.textContent = `${S.whats.length} × ${S.hows.length} geladen`; codeMsg.className = 'm ok';
+    codeIn.value = '';
+    setTimeout(()=>dlg.close(), 800);
+  }catch(err){ codeMsg.textContent = err.message; codeMsg.className = 'm err'; }
+});
+codeIn.addEventListener('input', ()=>{ codeMsg.textContent = ''; codeMsg.className = 'm'; });
+dlg.addEventListener('click', e=>{ if(e.target===dlg) dlg.close(); });
+dlg.addEventListener('close', layout);
+
+$('#btnPrint').addEventListener('click', ()=>{ exitEdit(); window.print(); });
+$('#btnNew').addEventListener('click', e=>arm(e.currentTarget, ()=>{ S = mk(3,3); setBrush(null); fitMode = true; render(); }, 'Alles löschen?'));
+
+/* ---------- Hell / Dunkel ---------- */
+const root = document.documentElement, btnTheme = $('#btnTheme');
+function applyTheme(t){ root.dataset.theme = t; btnTheme.textContent = t==='dark' ? '☀' : '☾'; try{ localStorage.setItem('qfd.theme', t); }catch(e){} }
+btnTheme.addEventListener('click', ()=>applyTheme(root.dataset.theme==='dark' ? 'light' : 'dark'));
+let theme = 'light'; try{ theme = localStorage.getItem('qfd.theme') || 'light'; }catch(e){}
+applyTheme(theme);
+
+/* ---------- Start ---------- */
+async function start(hot){
+  if(hot && hot.whats){ S = hot; }
+  else {
+    const h = location.hash.slice(1);
+    if(/^(QFD[01]-|[KVW])/.test(h)){ try{ S = (await decodeCode(decodeURIComponent(h))).state; try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){} }catch(e){} }
+    if(!S){ try{ const raw = localStorage.getItem(LS); if(raw){ const o = JSON.parse(raw); if(o && o.whats && o.hows){ o.comps = o.comps||[]; o.rate = o.rate||o.whats.map(()=>[]); S = o; } } }catch(e){} }
+    if(!S) S = sample();
+  }
+  setBrush(null); render();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+}
+window.claude?.hot?.snapshot?.(()=>S);
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+
+</body></html>
