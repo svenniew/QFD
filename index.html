@@ -88,7 +88,8 @@ input[type=text]:focus,textarea:focus,button:focus-visible{outline:2px solid var
 @media (pointer:coarse){
   .del{width:32px;height:32px;font-size:18px}
   .add{height:36px;min-width:36px}
-  .ht,.vt[contenteditable]{font-size:16px}
+  .vt[contenteditable]{font-size:16px}
+  .ht{font-size:13px;line-height:1.15;padding:3px 6px}
   .zoombar button{width:40px;height:40px}
 }
 
@@ -266,7 +267,7 @@ td.rel .cand .sy,.cand .sy{width:13px;height:13px}
 .hoq td.rate{color:var(--accent2)}
 .hoq .r-calc.pct td{font-weight:500;font-size:var(--fs-label);color:var(--muted)}
 .hoq .r-calc td.top1{color:var(--accent2)}
-@media (pointer:coarse){ .ht,.vt[contenteditable]{font-size:16px} }
+@media (pointer:coarse){ .vt[contenteditable]{font-size:16px} .ht{font-size:13px;line-height:1.15;padding:3px 6px} }
 
 /* ---------- Auswertung ---------- */
 .evpanel{width:300px;flex:none;display:flex;flex-direction:column;gap:8px;min-height:0}
