@@ -106,7 +106,7 @@ input[type=text]:focus,textarea:focus,button:focus-visible{outline:2px solid var
 @media (max-width:760px){
   .phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding-block:6px 4px}
   .ph{flex-direction:column;justify-content:center;height:auto;min-height:40px;padding:4px 2px;gap:0;min-width:0;
-    font-size:11px;line-height:1.2;text-align:center;overflow:hidden;white-space:normal;overflow-wrap:anywhere}
+    font-size:10.5px;letter-spacing:-.1px;line-height:1.2;text-align:center;overflow:hidden;white-space:normal;overflow-wrap:normal;word-break:keep-all;hyphens:none}
   .ph b{display:none}
   .ph .p1,.ph .p2{display:block;width:100%;overflow:hidden;text-overflow:ellipsis}
   .ph .x{position:absolute}
@@ -152,7 +152,7 @@ td.dir .sy{width:19px;height:19px}
 .vt{writing-mode:vertical-rl;transform:rotate(180deg);display:inline-block;max-height:146px;max-width:100%;
   font-family:var(--fb);font-weight:normal;font-size:13.5px;line-height:1.15;padding:5px 0;overflow:hidden;overflow-wrap:anywhere;text-align:left}
 .vt.small{font-size:12px;color:var(--muted);max-height:70px;font-family:var(--fb);font-weight:normal}
-.vt[contenteditable]{height:116px;width:calc(var(--cw) - 10px);max-height:none;border:1px solid transparent;border-radius:6px;cursor:text;padding:6px 4px;line-height:1.2;margin-bottom:4px;box-sizing:border-box;background:transparent}
+.vt[contenteditable]{height:112px;width:calc(var(--cw) - 10px);max-height:none;border:1px solid transparent;border-radius:6px;cursor:text;padding:6px 4px;line-height:1.2;margin-bottom:4px;box-sizing:border-box;background:transparent}
 .vt.small[contenteditable]{height:60px;margin-bottom:32px}
 @media (hover:hover){ td:hover > .vt[contenteditable], .vt[contenteditable]:hover{border-color:var(--line)} }
 .vt[contenteditable]:focus{background:var(--surface);outline:2px solid var(--accent);outline-offset:1px}
@@ -172,7 +172,11 @@ td.dir .sy{width:19px;height:19px}
 .hoq .r-tgt th.flbl{border-top:1px solid var(--line2);vertical-align:bottom;padding-bottom:10px}
 .hoq th.cmp-title{text-align:center;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 .hoq td.how-h{position:relative}
-.del.col{position:absolute;top:3px;left:50%;transform:translateX(-50%)}
+.del.col{position:absolute;top:auto;bottom:4px;left:50%;transform:translateX(-50%);width:28px;height:28px;font-size:17px}
+.del{color:var(--danger);opacity:0;pointer-events:none}
+td.how-h:focus-within .del,td.lbl:focus-within .del,td.act .del,.del.armed{opacity:1;pointer-events:auto}
+.del.armed{width:auto;min-width:34px;padding:0 6px;font-size:14px}
+@media (hover:hover){ td.how-h:hover .del,td.lbl:hover .del{opacity:.55;pointer-events:auto} td.how-h:hover .del:hover,td.lbl:hover .del:hover{opacity:1} }
 .hoq td.rate{font-family:var(--fd);font-weight:600;font-size:16px;color:var(--accent2)}
 .hoq .first{border-left:1px solid var(--line2)}
 .hoq td.hl{background:color-mix(in srgb, var(--accent) 20%, var(--surface))}
@@ -205,6 +209,16 @@ td.dir .sy{width:19px;height:19px}
 @media (hover:hover){ .add:hover{background:var(--accent2-soft)} }
 .add.wide{width:100%;text-align:left;padding-left:10px}
 .hoq .r-add td{height:44px;text-align:center}
+.leg{font-family:var(--fb);font-size:11px;color:var(--muted);opacity:.75;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.leg .sy{width:13px;height:13px;color:var(--accent);opacity:.8}
+.hoq td.leg-l{text-align:left;padding-left:4px;white-space:nowrap}
+.hoq td.leg-l .leg{margin-left:6px;vertical-align:middle}
+.hoq td.leg-m{text-align:left;padding-left:2px}
+.hoq td.roofleg{vertical-align:bottom;text-align:left;padding:0 0 6px 10px}
+.rleg{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.35;font-size:10.5px}
+.rleg b{color:var(--ink);font-weight:600;font-family:var(--fd);opacity:.9}
+.rleg .p{color:var(--pos)} .rleg .n{color:var(--neg)}
+@media (max-width:760px){ .hoq td.leg-l .leg{display:none} }
 .hoq .r-calc td{font-family:var(--fd);font-weight:500;font-size:14px}
 .hoq .r-calc td.top1{background:var(--accent2-soft);color:var(--accent2);font-weight:600}
 .hoq .r-calc.pct td{font-size:13px;color:var(--muted)}
@@ -335,7 +349,7 @@ dialog::backdrop{background:rgba(10,20,30,.45)}
 .qrbig svg{width:min(92vmin,100%);height:min(92vmin,100%)}
 @media (max-width:560px){ .qrrow{flex-direction:column} .qr{width:100%;height:auto;aspect-ratio:1;max-width:260px;align-self:center} }
 
-@media (prefers-reduced-motion:no-preference){ .btn,.br,.del,.cand{transition:background .12s,color .12s,border-color .12s,opacity .12s} }
+@media (prefers-reduced-motion:no-preference){ .btn,.br,.cand{transition:background .12s,color .12s,border-color .12s,opacity .12s} }
 /* Hell/Dunkel: weicher Übergang nur während des Umschaltens */
 .theming, .theming *{transition:background-color .4s ease, color .4s ease, border-color .4s ease, fill .4s ease, stroke .4s ease, box-shadow .4s ease !important}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -518,7 +532,8 @@ function render(){
   const tw = cssPx('--lw') + cssPx('--ww') + (nc+cc)*cssPx('--cw') + 3*cssPx('--aw');
   let h = `<table class="hoq" id="hoq" style="width:${tw}px"><colgroup><col class="c-lbl"><col class="c-wgt"><col class="c-add">${'<col class="c-how">'.repeat(nc)}<col class="c-add">${'<col class="c-how">'.repeat(cc)}<col class="c-add"></colgroup><tbody>`;
   /* WIE-Block: Dach + Optimierung + Merkmale */
-  h += `<tr class="r-roof"><td class="addc" colspan="2"></td>${gapC}<td colspan="${nc}">${n>=2?roofSvg(n):'<div class="roof-empty"></div>'}</td>${gapC}${gapR}</tr>`;
+  h += `<tr class="r-roof"><td class="addc" colspan="2"></td>${gapC}<td colspan="${nc}">${n>=2?roofSvg(n):'<div class="roof-empty"></div>'}</td>${gapC}`
+     + `<td class="addc roofleg" colspan="${cc+1}"><div class="leg rleg"><b>Korrelation:</b><span class="p">++ = stark positiv</span><span class="p">+ = positiv</span><span class="n">− = negativ</span><span class="n">−− = stark negativ</span></div></td></tr>`;
   h += `<tr class="r-dir"><th class="lbl free tight" colspan="3"><span class="lbox">Optimierung</span></th>${hows((x,j)=>`<td class="cell dir${fst(j)}" data-cell="dir" data-j="${j}" title="${DIRN[x.dir]}">${DIR[x.dir]}</td>`)}${ph}${gapC}<th class="lbl cmp-title" colspan="${c>=2 ? cc : cc+1}">Wettbewerb</th>${c>=2 ? gapC : ''}</tr>`;
   h += `<tr class="r-how"><th class="lbl free tight wie" colspan="3"><span class="lbox wiebox">WIE?<span class="sub">${STAGES[DOC.active+1]}</span></span></th>`
      + hows((x,j)=>`<td class="cell how-h${fst(j)}" data-cell="how" data-j="${j}"><button class="del col" type="button" tabindex="-1" data-act="delHow" data-j="${j}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-hown="${j}">${esc(x.name)}</span></td>`)
@@ -539,7 +554,9 @@ function render(){
        + cmps((x,k)=>`<td class="cell rate${fst(k)}${S.rate[i][k]?'':' todo'}${isSeen('rate',i,k)?' seen':''}" data-cell="rate" data-i="${i}" data-j="${k}">${S.rate[i][k]||''}</td>`)
        + cph + gapC + `</tr>`;
   });
-  h += `<tr class="r-add"><td class="addc" colspan="2">${DOC.active ? '' : '<button class="add" type="button" tabindex="-1" data-act="addWhat" title="Anforderung hinzufügen">+</button>'}</td><td class="addc" colspan="${nc + cc + 3}"></td></tr>`;
+  h += `<tr class="r-add"><td class="addc leg-l" colspan="2">${DOC.active ? '' : '<button class="add" type="button" tabindex="-1" data-act="addWhat" title="Anforderung hinzufügen">+</button>'}<span class="leg">5 = hoch</span></td>`
+     + `<td class="addc"></td><td class="addc leg-m" colspan="${nc}"><span class="leg">${REL[9]} = 9 · ${REL[3]} = 3 · ${REL[1]} = 1</span></td>`
+     + `<td class="addc" colspan="${cc + 2}"></td></tr>`;
   /* Fußtabelle: Labels rahmenlos, Zellen nur unter den Merkmalen */
   h += `<tr class="r-tgt"><th class="lbl free tight tg" colspan="3"><span class="fbox tbox">Zielwert</span></th>${hows((x,j)=>`<td class="cell tgt" data-cell="how" data-j="${j}"><span class="vt small" contenteditable="true" spellcheck="false" data-howt="${j}">${esc(x.target.replace(/^(≥|≤|=|>=|<=)s*/,''))}</span><button class="rot" type="button" tabindex="-1" data-act="rotTgt" data-j="${j}" title="≥ / ≤ / =">${pfxOf(x.target).trim()||'·'}</button></td>`)}${ph}${gapC}${gapR}</tr>`;
   h += `<tr class="r-calc abs"><th class="lbl free tight" colspan="3"><span class="fbox">Bedeutung</span></th>${hows((x,j)=>`<td data-abs="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
@@ -761,10 +778,10 @@ house.addEventListener('click', e=>{
   if(act){
     if(act.dataset.act==='addWhat') addWhat();
     else if(act.dataset.act==='addHow') addHow();
-    else if(act.dataset.act==='delWhat') arm(act, ()=>delWhat(+act.dataset.i), '?');
-    else if(act.dataset.act==='delHow') arm(act, ()=>delHow(+act.dataset.j), '?');
+    else if(act.dataset.act==='delWhat') arm(act, ()=>delWhat(+act.dataset.i), '×?');
+    else if(act.dataset.act==='delHow') arm(act, ()=>delHow(+act.dataset.j), '×?');
     else if(act.dataset.act==='addCmp') addCmp();
-    else if(act.dataset.act==='delCmp') arm(act, ()=>delCmp(+act.dataset.j), '?');
+    else if(act.dataset.act==='delCmp') arm(act, ()=>delCmp(+act.dataset.j), '×?');
     else if(act.dataset.act==='rotTgt') rotTgt(+act.dataset.j);
     return;
   }
@@ -806,7 +823,13 @@ house.addEventListener('input', e=>{
   else return;
   save();
 });
-house.addEventListener('focusout', e=>{ const t = e.target; if(t.isContentEditable){ const txt = t.textContent.replace(/[\r\n]+/g,' ').trim(); if(t.textContent!==txt) t.textContent = txt; } });
+house.addEventListener('focusin', e=>{
+  house.querySelectorAll('td.act').forEach(td=>td.classList.remove('act'));
+  const td = e.target.closest('td'); if(td) td.classList.add('act');
+});
+house.addEventListener('focusout', e=>{
+  const td = e.target.closest('td');
+  setTimeout(()=>{ if(td && !td.contains(document.activeElement) && !td.querySelector('.armed')) td.classList.remove('act'); }, 150); const t = e.target; if(t.isContentEditable){ const txt = t.textContent.replace(/[\r\n]+/g,' ').trim(); if(t.textContent!==txt) t.textContent = txt; } });
 house.addEventListener('paste', e=>{ if(!e.target.isContentEditable) return; e.preventDefault(); const txt = (e.clipboardData||window.clipboardData).getData('text').replace(/[\r\n]+/g,' '); document.execCommand('insertText', false, txt); });
 /* Hover: beteiligte Zeile/Spalte(n) markieren */
 let hlEls = [];
