@@ -107,7 +107,7 @@ input[type=text]:focus,textarea:focus,button:focus-visible{outline:2px solid var
   .phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding-block:6px 4px}
   .ph{flex-direction:column;justify-content:center;height:auto;min-height:40px;padding:4px 2px;gap:0;min-width:0;
     font-size:11px;line-height:1.2;text-align:center;overflow:hidden;white-space:normal;overflow-wrap:anywhere}
-  .ph b{font-size:11px;line-height:1.1}
+  .ph b{display:none}
   .ph .p1,.ph .p2{display:block;width:100%;overflow:hidden;text-overflow:ellipsis}
   .ph .x{position:absolute}
   .ph{position:relative}
@@ -1112,9 +1112,16 @@ btnTheme.addEventListener('click', ()=>{ applyTheme(root.dataset.theme==='dark' 
 btnTheme.addEventListener('animationend', ()=>btnTheme.classList.remove('spin'));
 const menu = $('#btnMenu');
 menu.addEventListener('click', e=>{ e.stopPropagation(); document.body.classList.toggle('menu-open'); });
-$('.top .actions').addEventListener('click', ()=>document.body.classList.remove('menu-open'));
+$('.top .actions').addEventListener('click', e=>{
+  const b = e.target.closest('button');
+  if(b && b.classList.contains('armed')) return;   /* erste Stufe von "Neu": Menü offen lassen */
+  document.body.classList.remove('menu-open');
+});
 document.addEventListener('pointerdown', e=>{
-  if(document.body.classList.contains('menu-open') && !e.target.closest('.top')) document.body.classList.remove('menu-open');
+  if(document.body.classList.contains('menu-open') && !e.target.closest('.top')){
+    document.body.classList.remove('menu-open');
+    document.querySelectorAll('.top .actions .armed').forEach(b=>{ b.classList.remove('armed'); clearTimeout(b._t); if(b._orig) b.textContent = b._orig; });
+  }
 });
 let theme = 'light'; try{ theme = localStorage.getItem('qfd.theme') || 'light'; }catch(e){}
 applyTheme(theme);
@@ -1268,7 +1275,7 @@ async function evLoad(){
 /* ---------- Phasen ---------- */
 function renderPhases(){
   const n = DOC.phases.length;
-  let h = DOC.phases.map((ph,k)=>`<button type="button" class="ph${k===DOC.active?' on':''}" tabindex="-1" data-ph="${k}"><b>${k+1}</b><span class="p1">${SHORT[k]}</span><span class="p2">→ ${SHORT[k+1]}</span>${k===n-1 && n>1 ? '<span class="x" data-delph="'+k+'">×</span>' : ''}</button>`).join('');
+  let h = DOC.phases.map((ph,k)=>`<button type="button" class="ph${k===DOC.active?' on':''}" tabindex="-1" data-ph="${k}"><b>${k+1}</b>${SHORT[k+1].length > 9 ? `<span class="p1">${SHORT[k]} →</span><span class="p2">${SHORT[k+1]}</span>` : `<span class="p1">${SHORT[k]}</span><span class="p2">→ ${SHORT[k+1]}</span>`}${k===n-1 && n>1 ? '<span class="x" data-delph="'+k+'">×</span>' : ''}</button>`).join('');
   if(n < MAXPH) h += `<button type="button" class="ph add" tabindex="-1" data-addph="1"><span class="p1">+</span><span class="p2">${SHORT[n+1]}</span></button>`;
   $('#phases').innerHTML = h;
   $('#phases').hidden = false;
