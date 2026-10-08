@@ -1,5 +1,3 @@
-<!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
 <title>QFD Tool</title>
 <meta name="description" content="House of Quality intuitiv ausfüllen – WAS/WIE erweitern, Felder direkt in der Zelle belegen, Diagramm als Code weitergeben.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
@@ -163,6 +161,7 @@ td.dir .sy{width:19px;height:19px}
 @media (hover:hover){ td:hover > .vt[contenteditable], .vt[contenteditable]:hover{border-color:var(--line)} }
 .vt[contenteditable]:focus{background:var(--surface);outline:2px solid var(--accent);outline-offset:1px}
 .hoq .r-tgt td,.hoq .r-tgt th{height:98px;vertical-align:bottom}
+.hoq td.how-h{padding-bottom:22px}
 .hoq td.tgt{position:relative}
 .rot{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:26px;height:24px;border-radius:6px;border:1px solid var(--line2);background:var(--surface2);color:var(--accent2);cursor:pointer;font-family:var(--fd);font-weight:600;font-size:14px;line-height:1;padding:0}
 @media (hover:hover){ .rot:hover{border-color:var(--accent2);background:var(--accent2-soft)} }
@@ -179,6 +178,17 @@ td.dir .sy{width:19px;height:19px}
 .hoq th.cmp-title{text-align:center;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 .hoq td.how-h{position:relative}
 .del.col{position:absolute;top:3px;left:50%;transform:translateX(-50%)}
+.grab{color:var(--muted);opacity:.45;cursor:grab;user-select:none;touch-action:none;font-size:15px;line-height:1;
+  padding:2px 3px;border-radius:5px;flex:none}
+.grab.col{position:absolute;bottom:3px;left:50%;transform:translateX(-50%) rotate(90deg)}
+@media (hover:hover){ .grab:hover{opacity:1;background:var(--accent-soft);color:var(--accent)} }
+.grab.on{opacity:1;color:var(--accent);cursor:grabbing}
+.hoq td.dropL{box-shadow:inset 3px 0 0 var(--accent)}
+.hoq td.dropR{box-shadow:inset -3px 0 0 var(--accent)}
+.hoq td.dropT{box-shadow:inset 0 3px 0 var(--accent)}
+.hoq td.dropB{box-shadow:inset 0 -3px 0 var(--accent)}
+body.dragging{cursor:grabbing}
+@media (pointer:coarse){ .grab{font-size:18px;padding:4px 6px} }
 .hoq td.rate{font-family:var(--fd);font-weight:600;font-size:16px;color:var(--accent2)}
 .hoq .first{border-left:1px solid var(--line2)}
 .hoq td.hl{background:color-mix(in srgb, var(--accent) 20%, var(--surface))}
@@ -226,6 +236,16 @@ td.dir .sy{width:19px;height:19px}
 .rleg .p{color:var(--pos)} .rleg .n{color:var(--neg)}
 @media (max-width:760px){ .hoq td.leg-w .leg{font-size:9.5px;letter-spacing:-.2px} }
 .hoq .r-calc td{font-family:var(--fd);font-weight:500;font-size:14px}
+.hoq td.impc{padding:0}
+input.imp{width:100%;height:calc(var(--rh) - 2px);border:0;background:transparent;text-align:center;
+  font-family:var(--fd);font-weight:600;font-size:var(--fs-val);color:var(--ink);padding:0;border-radius:0}
+input.imp:focus{outline:2px solid var(--accent);outline-offset:-2px;background:var(--surface)}
+input.imp.good{background:var(--pos-soft);color:var(--pos)}
+input.imp.bad{background:var(--neg-soft);color:var(--neg)}
+.hoq td.impc.top1{background:var(--accent2-soft)}
+.hoq td.impc.top1 input.imp{color:var(--accent2)}
+.btn.mini{height:30px;min-width:38px;padding:0 8px;font-family:var(--fd);font-weight:600;font-size:14px;color:var(--accent2);border-color:var(--accent2)}
+.hoq td.chk{text-align:left;padding-left:8px}
 .hoq .r-calc td.top1{background:var(--accent2-soft);color:var(--accent2);font-weight:600}
 .hoq .r-calc.pct td{font-size:13px;color:var(--muted)}
 .hoq .r-roof td{background:transparent;border-color:transparent;height:auto;vertical-align:bottom}
@@ -470,7 +490,7 @@ const house = $('#house'), stage = $('#stage'), zoomer = $('#zoomer'), zPct = $(
 
 /* ---------- Zustand ---------- */
 function mk(m, n){
-  return { title:'', author:'', seen:{}, whats:Array.from({length:m},()=>({name:'',w:0})),
+  return { title:'', author:'', seen:{}, imp:[], whats:Array.from({length:m},()=>({name:'',w:0})),
     hows:Array.from({length:n},()=>({name:'',dir:1,target:''})),
     rel:Array.from({length:m},()=>Array(n).fill(0)),
     roof:Array.from({length:n},()=>Array(n).fill(0)),
@@ -550,7 +570,7 @@ function render(){
      + `<td class="addc roofleg" colspan="${cc+2}"><div class="leg rleg"><b style="margin-left:-52px">Korrelation:</b><span style="margin-left:-38px"><i class="p">++</i> = stark positiv</span><span style="margin-left:-24px"><i class="p">+</i> = positiv</span><span style="margin-left:-10px"><i class="n">−</i> = negativ</span><span style="margin-left:4px"><i class="n">−−</i> = stark negativ</span></div></td></tr>`;
   h += `<tr class="r-dir"><th class="lbl free tight" colspan="3"><span class="lbox">Optimierung</span></th>${hows((x,j)=>`<td class="cell dir${fst(j)}" data-cell="dir" data-j="${j}" title="${DIRN[x.dir]}">${DIR[x.dir]}</td>`)}${ph}${gapC}<th class="lbl cmp-title" colspan="${c>=2 ? cc : cc+1}">Wettbewerb</th>${c>=2 ? gapC : ''}</tr>`;
   h += `<tr class="r-how"><th class="lbl free tight wie" colspan="3"><span class="lbox wiebox">WIE?<span class="sub">${STAGES[DOC.active+1]}</span></span></th>`
-     + hows((x,j)=>`<td class="cell how-h${fst(j)}" data-cell="how" data-j="${j}"><button class="del col" type="button" tabindex="-1" data-act="delHow" data-j="${j}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-hown="${j}">${esc(x.name)}</span></td>`)
+     + hows((x,j)=>`<td class="cell how-h${fst(j)}" data-cell="how" data-j="${j}"><button class="del col" type="button" tabindex="-1" data-act="delHow" data-j="${j}" title="Spalte löschen">×</button><span class="grab col" data-grab="how" data-j="${j}" title="Verschieben">∷</span><span class="vt" contenteditable="true" spellcheck="false" data-hown="${j}">${esc(x.name)}</span></td>`)
      + (n ? '' : '<td class="ph"></td>')
      + `<td class="addc"><button class="add" type="button" tabindex="-1" data-act="addHow" title="Merkmal hinzufügen">+</button></td>`
      + cmps((x,k)=>`<td class="cell how-h cmp-h${fst(k)}" data-cell="cmp" data-j="${k}"><button class="del col" type="button" tabindex="-1" data-act="delCmp" data-j="${k}" title="Spalte löschen">×</button><span class="vt" contenteditable="true" spellcheck="false" data-cmpn="${k}">${esc(x.name)}</span></td>`)
@@ -561,7 +581,7 @@ function render(){
     h += (DOC.active
         ? `<tr class="${i===0?'first':''}"><td class="lbl"><div class="what"><div class="ht ro">${esc(w.name)}</div></div></td>`
           + `<td class="wgt fixed" title="aus Phase ${DOC.active} übernommen">${w.w||''}</td>${gapC}`
-        : `<tr class="${i===0?'first':''}"><td class="lbl"><div class="what"><div class="ht" contenteditable="true" spellcheck="false" data-whatn="${i}">${esc(w.name)}</div><button class="del" type="button" tabindex="-1" data-act="delWhat" data-i="${i}" title="Zeile löschen">×</button></div></td>`
+        : `<tr class="${i===0?'first':''}"><td class="lbl"><div class="what"><span class="grab" data-grab="what" data-i="${i}" title="Verschieben">∷</span><div class="ht" contenteditable="true" spellcheck="false" data-whatn="${i}">${esc(w.name)}</div><button class="del" type="button" tabindex="-1" data-act="delWhat" data-i="${i}" title="Zeile löschen">×</button></div></td>`
           + `<td class="cell wgt${w.w?'':' todo'}${isSeen('w',i)?' seen':''}" data-cell="w" data-i="${i}">${w.w||''}</td>${gapC}`)
        + hows((x,j)=>{ const v = S.rel[i][j]||0; return `<td class="cell rel v${v}${fst(j)}${isSeen('rel',i,j)?' seen':''}" data-cell="rel" data-i="${i}" data-j="${j}">${REL[v]||''}</td>`; })
        + ph + gapC
@@ -573,7 +593,9 @@ function render(){
      + `<td class="addc" colspan="${cc + 2}"></td></tr>`;
   /* Fußtabelle: Labels rahmenlos, Zellen nur unter den Merkmalen */
   h += `<tr class="r-tgt"><th class="lbl free tight tg" colspan="3"><span class="fbox tbox">Zielwert</span></th>${hows((x,j)=>`<td class="cell tgt" data-cell="how" data-j="${j}"><span class="vt small" contenteditable="true" spellcheck="false" data-howt="${j}">${esc(x.target.replace(/^(≥|≤|=|>=|<=)s*/,''))}</span><button class="rot" type="button" tabindex="-1" data-act="rotTgt" data-j="${j}" title="≥ / ≤ / =">${pfxOf(x.target).trim()||'·'}</button></td>`)}${ph}${gapC}${gapR}</tr>`;
-  h += `<tr class="r-calc abs"><th class="lbl free tight" colspan="3"><span class="fbox">Bedeutung</span></th>${hows((x,j)=>`<td data-abs="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
+  h += `<tr class="r-calc abs"><th class="lbl free tight" colspan="3"><span class="fbox">Bedeutung</span></th>`
+     + hows((x,j)=>`<td class="impc" data-absc="${j}"><input type="text" inputmode="numeric" class="imp" data-abs="${j}" value="${esc(S.imp && S.imp[j]!=null ? String(S.imp[j]) : '')}" autocomplete="off"></td>`)
+     + `${ph}${gapC}<td class="addc chk" colspan="${cc+1}"><button class="btn mini" type="button" tabindex="-1" data-act="check" title="Eingaben prüfen">✓</button></td></tr>`;
   h += `<tr class="r-calc pct"><th class="lbl free tight" colspan="3"><span class="fbox">%</span></th>${hows((x,j)=>`<td data-pct="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
   h += `<tr class="r-calc"><th class="lbl free tight" colspan="3"><span class="fbox">Rang</span></th>${hows((x,j)=>`<td data-rank="${j}"></td>`)}${ph}${gapC}${gapR}</tr>`;
   h += '</tbody></table>';
@@ -586,15 +608,45 @@ function render(){
   layout();
   save();
 }
+/* Unten rechnet der Nutzer selbst: %/Rang folgen den eingetragenen Werten */
+function shownAbs(){
+  const n = S.hows.length, {abs} = compute();
+  if(mode==='eval') return abs;
+  return Array.from({length:n},(_,j)=>{ const v = S.imp && S.imp[j]; return (v===''||v==null) ? 0 : +v; });
+}
 function updateFooter(rel = S.rel){
-  const {abs, pct, rank} = compute(rel);
+  const n = S.hows.length;
+  const auto = compute(rel).abs;
+  const vals = mode==='eval' ? auto : shownAbs();
+  const total = vals.reduce((a,b)=>a+(b||0),0);
+  const order = vals.map((a,j)=>j).sort((a,b)=>vals[b]-vals[a]);
+  const rank = Array(n).fill(0); let r = 0;
+  order.forEach((j,k)=>{ if(k===0 || vals[j]!==vals[order[k-1]]) r = k+1; rank[j] = vals[j]>0 ? r : 0; });
   S.hows.forEach((x,j)=>{
-    const a = house.querySelector(`[data-abs="${j}"]`), p = house.querySelector(`[data-pct="${j}"]`), r = house.querySelector(`[data-rank="${j}"]`);
-    if(!a) return;
-    a.textContent = abs[j]; a.classList.toggle('top1', rank[j]===1);
-    p.textContent = abs[j] ? pct[j].toLocaleString('de-DE',{maximumFractionDigits:1}) : '';
-    r.textContent = rank[j] || '';
+    const inp = house.querySelector(`input.imp[data-abs="${j}"]`), cell = house.querySelector(`[data-absc="${j}"]`);
+    const p = house.querySelector(`[data-pct="${j}"]`), rk = house.querySelector(`[data-rank="${j}"]`);
+    if(cell){ cell.classList.toggle('top1', rank[j]===1 && vals[j]>0); }
+    if(inp && mode==='eval') inp.value = auto[j] || '';
+    if(!p) return;
+    p.textContent = vals[j] ? (vals[j]/total*100).toLocaleString('de-DE',{maximumFractionDigits:1}) : '';
+    rk.textContent = rank[j] || '';
   });
+}
+function checkImp(){
+  const auto = compute().abs, btn = house.querySelector('[data-act="check"]');
+  let ok = 0, filled = 0;
+  S.hows.forEach((x,j)=>{
+    const inp = house.querySelector(`input.imp[data-abs="${j}"]`); if(!inp) return;
+    inp.classList.remove('good','bad');
+    const raw = (inp.value||'').trim();
+    if(!raw) return;
+    filled++;
+    if(+raw === auto[j]){ ok++; inp.classList.add('good'); } else inp.classList.add('bad');
+  });
+  if(btn){
+    btn.textContent = filled ? `${ok}/${S.hows.length}` : '✓';
+    clearTimeout(btn._t); btn._t = setTimeout(()=>{ btn.textContent = '✓'; house.querySelectorAll('input.imp').forEach(i=>i.classList.remove('good','bad')); }, 6000);
+  }
 }
 /* eine Zelle aus dem Zustand neu zeichnen (auch: Bearbeitungsmodus verlassen) */
 const seenKey = (kind,i,j) => kind==='rel' ? `r${i}_${j}` : kind==='w' ? `w${i}` : kind==='rate' ? `c${i}_${j}` : kind==='roof' ? `f${i}_${j}` : '';
@@ -649,7 +701,7 @@ const pts = new Map(); let pinch0 = null, pan0 = null;
 const dist = () => { const a = [...pts.values()]; return Math.hypot(a[0][0]-a[1][0], a[0][1]-a[1][1]); };
 const mid = () => { const a = [...pts.values()]; return [(a[0][0]+a[1][0])/2, (a[0][1]+a[1][1])/2]; };
 stage.addEventListener('pointerdown', e=>{
-  if(e.pointerType!=='touch') return;
+  if(e.pointerType!=='touch' || drag) return;
   pts.set(e.pointerId, [e.clientX, e.clientY]);
   if(pts.size===1) pan0 = {x:e.clientX, y:e.clientY, sl:stage.scrollLeft, st:stage.scrollTop};
   if(pts.size===2){ const m = mid(); pinch0 = {d:dist(), cx:m[0], cy:m[1]}; pan0 = null; }
@@ -694,6 +746,7 @@ function addWhat(){
   const sp = house.querySelector(`[data-whatn="${S.whats.length-1}"]`); if(sp) focusEnd(sp);
 }
 function addHow(){
+  (S.imp = S.imp||[]).push('');
   S.hows.push({name:'',dir:1,target:''}); S.rel.forEach(r=>r.push(0));
   S.roof.forEach(r=>r.push(0)); S.roof.push(Array(S.hows.length).fill(0)); render();
   if(DOC.phases[DOC.active+1]) syncPhase(DOC.active+1);
@@ -705,7 +758,7 @@ function addCmp(){
   const sp = house.querySelector(`[data-cmpn="${S.comps.length-1}"]`); if(sp) focusEnd(sp);
 }
 function delCmp(k){ S.seen = {}; S.comps.splice(k,1); S.rate.forEach(r=>r.splice(k,1)); render(); }
-function delHow(j){ S.seen = {}; S.hows.splice(j,1); S.rel.forEach(r=>r.splice(j,1)); S.roof.splice(j,1); S.roof.forEach(r=>r.splice(j,1)); if(DOC.phases[DOC.active+1]) syncPhase(DOC.active+1); render(); }
+function delHow(j){ S.seen = {}; if(S.imp) S.imp.splice(j,1); S.hows.splice(j,1); S.rel.forEach(r=>r.splice(j,1)); S.roof.splice(j,1); S.roof.forEach(r=>r.splice(j,1)); if(DOC.phases[DOC.active+1]) syncPhase(DOC.active+1); render(); }
 
 /* ---------- Stempel ---------- */
 function setBrush(b){
@@ -797,6 +850,7 @@ house.addEventListener('click', e=>{
     else if(act.dataset.act==='addCmp') addCmp();
     else if(act.dataset.act==='delCmp') arm(act, ()=>delCmp(+act.dataset.j), '×?');
     else if(act.dataset.act==='rotTgt') rotTgt(+act.dataset.j);
+    else if(act.dataset.act==='check') checkImp();
     return;
   }
   const cand = e.target.closest('[data-set]');
@@ -824,6 +878,13 @@ function setCaret(el, n){
 function focusEnd(el){ el.focus(); try{ const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }catch(e){} }
 house.addEventListener('input', e=>{
   const t = e.target, d = t.dataset;
+  if(t.classList && t.classList.contains('imp')){
+    const j = +d.abs, v = t.value.replace(/[^0-9]/g,'');
+    if(v !== t.value) t.value = v;
+    (S.imp = S.imp||[])[j] = v === '' ? '' : +v;
+    t.classList.remove('good','bad');
+    updateFooter(); save(); return;
+  }
   let txt = t.textContent.replace(/[\r\n]+/g,' ');
   if(/\^[23]/.test(txt)){                       /* mm^2 -> mm², m^3 -> m³ */
     const cut = txt.slice(0, caretPos(t)).replace(/\^2/g,'²').replace(/\^3/g,'³');
@@ -1310,6 +1371,89 @@ async function evLoad(){
   for(const x of list){ try{ const r = await decodeCode(x.code); EV.entries.push({name:x.name||r.name||'', code:x.code, st:r.state}); }catch(e){} }
 }
 
+/* ---------- Umordnen per Greifpunkt ---------- */
+const moveArr = (a, from, to) => { const x = a.splice(from,1)[0]; a.splice(to,0,x); return a; };
+function remapSeen(kind, from, to){
+  if(!S.seen) return;
+  const idx = a => { if(a===from) return to; if(from<to && a>from && a<=to) return a-1; if(from>to && a>=to && a<from) return a+1; return a; };
+  const out = {};
+  Object.keys(S.seen).forEach(k=>{
+    let m;
+    if(kind==='what'){
+      if((m = /^w(\d+)$/.exec(k))) out['w'+idx(+m[1])] = 1;
+      else if((m = /^r(\d+)_(\d+)$/.exec(k))) out[`r${idx(+m[1])}_${m[2]}`] = 1;
+      else if((m = /^c(\d+)_(\d+)$/.exec(k))) out[`c${idx(+m[1])}_${m[2]}`] = 1;
+      else out[k] = 1;
+    } else {
+      if((m = /^r(\d+)_(\d+)$/.exec(k))) out[`r${m[1]}_${idx(+m[2])}`] = 1;
+      else if((m = /^f(\d+)_(\d+)$/.exec(k))){ const a = idx(+m[1]), b = idx(+m[2]); out[`f${Math.min(a,b)}_${Math.max(a,b)}`] = 1; }
+      else out[k] = 1;
+    }
+  });
+  S.seen = out;
+}
+function moveWhat(from, to){
+  if(from===to || DOC.active) return;
+  moveArr(S.whats, from, to); moveArr(S.rel, from, to); moveArr(S.rate, from, to);
+  remapSeen('what', from, to);
+  render();
+}
+function moveHow(from, to){
+  if(from===to) return;
+  const n = S.hows.length;
+  const full = Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=> i<j ? (S.roof[i][j]||0) : j<i ? (S.roof[j][i]||0) : 0));
+  const ord = [...Array(n).keys()]; moveArr(ord, from, to);
+  S.hows = ord.map(k=>S.hows[k]);
+  S.rel = S.rel.map(row=>ord.map(k=>row[k]||0));
+  if(S.imp) S.imp = ord.map(k=>S.imp[k]);
+  S.roof = Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=> i<j ? full[ord[i]][ord[j]] : 0));
+  remapSeen('how', from, to);
+  if(DOC.phases[DOC.active+1]) syncPhase(DOC.active+1);
+  render();
+}
+let drag = null;
+function clearDrop(){ house.querySelectorAll('.dropL,.dropR,.dropT,.dropB').forEach(el=>el.classList.remove('dropL','dropR','dropT','dropB')); }
+house.addEventListener('pointerdown', e=>{
+  const g = e.target.closest('[data-grab]'); if(!g) return;
+  e.preventDefault(); e.stopPropagation();
+  const kind = g.dataset.grab;
+  if(kind==='what' && DOC.active) return;            /* abgeleitete Zeilen nicht umordnen */
+  drag = {kind, from: kind==='what' ? +g.dataset.i : +g.dataset.j, to: null, el: g};
+  g.classList.add('on'); document.body.classList.add('dragging');
+  g.setPointerCapture?.(e.pointerId);
+});
+house.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const cell = el && el.closest('td[data-i],td[data-j]'); clearDrop();
+  if(!cell) return;
+  if(drag.kind==='what'){
+    const i = cell.dataset.i; if(i===undefined) return;
+    const r = cell.getBoundingClientRect(), after = e.clientY > r.top + r.height/2;
+    drag.to = Math.max(0, Math.min(S.whats.length-1, +i + (after?0:0)));
+    const row = cell.closest('tr'); row.querySelectorAll('td').forEach(td=>td.classList.add(after?'dropB':'dropT'));
+    drag.after = after;
+  } else {
+    const j = cell.dataset.j; if(j===undefined || cell.dataset.cell==='rate' || cell.dataset.cell==='cmp') return;
+    const r = cell.getBoundingClientRect(), after = e.clientX > r.left + r.width/2;
+    drag.to = Math.max(0, Math.min(S.hows.length-1, +j));
+    house.querySelectorAll(`td[data-j="${j}"]`).forEach(td=>{ if(td.dataset.cell!=='rate' && td.dataset.cell!=='cmp') td.classList.add(after?'dropR':'dropL'); });
+    drag.after = after;
+  }
+});
+function endDrag(){
+  if(!drag) return;
+  const d = drag; drag = null;
+  d.el.classList.remove('on'); document.body.classList.remove('dragging'); clearDrop();
+  if(d.to===null || d.to===undefined) return;
+  let to = d.to;
+  if(d.after && to < d.from) to = Math.min(to+1, (d.kind==='what'?S.whats.length:S.hows.length)-1);
+  if(!d.after && to > d.from) to = Math.max(to-1, 0);
+  if(d.kind==='what') moveWhat(d.from, to); else moveHow(d.from, to);
+}
+house.addEventListener('pointerup', endDrag);
+house.addEventListener('pointercancel', endDrag);
+
 /* ---------- Phasen ---------- */
 function renderPhases(){
   const n = DOC.phases.length;
@@ -1366,7 +1510,7 @@ function normDoc(o){
   if(o.phases) { o.active = Math.min(o.active||0, o.phases.length-1); }
   else if(o.whats && o.hows) o = {title:o.title||'', author:o.author||'', active:0, phases:[o]};
   else return null;
-  o.phases.forEach(ph=>{ ph.comps = ph.comps||[]; ph.rate = ph.rate||ph.whats.map(()=>[]); ph.seen = ph.seen||{}; });
+  o.phases.forEach(ph=>{ ph.comps = ph.comps||[]; ph.rate = ph.rate||ph.whats.map(()=>[]); ph.seen = ph.seen||{}; ph.imp = ph.imp||[]; });
   return o;
 }
 async function start(hot){
@@ -1387,4 +1531,3 @@ window.claude?.hot?.snapshot?.(()=>DOC);
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 })();
 </script>
-</body></html>
